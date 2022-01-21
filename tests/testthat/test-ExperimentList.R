@@ -130,3 +130,47 @@ test_that("Constructor works (SingleCellExperiment)", {
   sce_list = list('SCE1' = sce1, 'SCE2' = sce2)
   expect_true(validObject(SingleCellExperimentList(sce_list)))
 })
+
+test_that("Constructor works (SpatialExperiment)", {
+  library(SpatialExperiment)
+
+  #empty object
+  # expect_true(validObject(.SpatialExperimentList())) #internal
+  expect_true(validObject(SpatialExperimentList())) #exported
+
+  #empty objects in the list
+  spe_empty1 = SpatialExperiment()
+  spe_empty2 = SpatialExperiment()
+  spe_empty_list = list(spe_empty1, spe_empty2)
+  expect_error(SpatialExperimentList(spe_empty_list))
+  names(spe_empty_list) = LETTERS[1:2]
+  expect_true(validObject(SpatialExperimentList(spe_empty_list)))
+
+  #with annotations
+  edata = data.frame('ID' = 1:3, row.names = letters[1:3])
+  expect_error(SpatialExperimentList(spe_empty_list, experimentData = edata))
+
+  edata = edata[1:2, , drop = FALSE]
+  expect_error(SpatialExperimentList(spe_empty_list, experimentData = edata))
+
+  rownames(edata) = NULL
+  expect_error(SpatialExperimentList(spe_empty_list, experimentData = edata))
+  expect_true(validObject(SpatialExperimentList(spe_empty_list, experimentData = edata, check.names = FALSE)))
+
+  rownames(edata) = LETTERS[1:2]
+  expect_true(validObject(SpatialExperimentList(spe_empty_list, experimentData = edata)))
+
+  #non-empty data
+  mat = matrix(1, 3, 3)
+  spe1 = SpatialExperiment(assays = list(mat))
+  spe2 = SpatialExperiment(assays = list(mat))
+  spe_list = list('SPE1' = spe1, 'SPE2' = spe2)
+  expect_true(validObject(SpatialExperimentList(spe_list)))
+
+  colnames(mat) = LETTERS[1:3]
+  rownames(mat) = letters[1:3]
+  spe1 = SpatialExperiment(assays = list(mat))
+  spe2 = SpatialExperiment(assays = list(mat))
+  spe_list = list('SPE1' = spe1, 'SPE2' = spe2)
+  expect_true(validObject(SpatialExperimentList(spe_list)))
+})

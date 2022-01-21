@@ -2,6 +2,7 @@
 
 export(RangedSummarizedExperimentList)
 export(SingleCellExperimentList)
+export(SpatialExperimentList)
 export(SummarizedExperimentList)
 exportClasses(RangedSummarizedExperimentList)
 exportClasses(SingleCellExperimentList)

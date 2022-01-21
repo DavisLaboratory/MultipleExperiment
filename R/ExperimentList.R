@@ -175,3 +175,59 @@ SingleCellExperimentList <-
     experimentIndex = experimentIndex
   )
 }
+
+#' @inheritParams SummarizedExperimentList
+#' @export
+SpatialExperimentList <-
+  function(experiments = SimpleList(),
+           experimentData = DataFrame(),
+           check.names = TRUE,
+           change.names = TRUE) {
+
+  stopifnot(length(experiments) == 0 | !is.null(names(experiments)))
+
+  #no experiment
+  if (length(experiments) == 0) {
+    spe = SpatialExperiment::SpatialExperiment()
+    return(.SpatialExperimentList(spe))
+  }
+
+  #change colnames
+  experimentNames = names(experiments)
+  if (change.names) {
+    experiments = mapply(function(x, y) {
+      #if colnames present, change
+      if (!is.null(colnames(x)))
+        colnames(x) = paste(y, colnames(x), sep = '.')
+      return(x)
+    }, experiments, experimentNames, SIMPLIFY = FALSE)
+  }
+
+  #create experimentData if missing
+  if (nrow(experimentData) == 0) {
+    experimentData = S4Vectors::DataFrame(row.names = experimentNames)
+  } else {
+    stopifnot(length(experiments) == nrow(experimentData))
+  }
+
+  #check experimentData
+  if (check.names) {
+    stopifnot(all(names(experiments) %in% rownames(experimentData)))
+  } else {
+    stopifnot(length(experiments) == nrow(experimentData))
+  }
+
+  #combine SEs
+  sce = do.call(BiocGenerics::cbind, experiments)
+  if (is(experimentData, 'data.frame'))
+    experimentData = as(experimentData, 'DataFrame')
+
+  #create reference map
+  experimentIndex = rep(1:length(experiments), times = sapply(experiments, ncol))
+
+  .SpatialExperimentList(
+    sce,
+    experimentData = experimentData,
+    experimentIndex = experimentIndex
+  )
+}
