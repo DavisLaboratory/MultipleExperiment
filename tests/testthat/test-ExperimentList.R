@@ -1,8 +1,9 @@
 test_that("Constructor works (SummarizedExperiment)", {
   library(SummarizedExperiment)
+  library(SingleCellExperiment)
+  library(SpatialExperiment)
 
   #empty object
-  expect_true(validObject(.SummarizedExperimentList())) #internal
   expect_true(validObject(SummarizedExperimentList())) #exported
 
   #empty objects in the list
@@ -12,6 +13,9 @@ test_that("Constructor works (SummarizedExperiment)", {
   expect_error(SummarizedExperimentList(se_empty_list))
   names(se_empty_list) = LETTERS[1:2]
   expect_true(validObject(SummarizedExperimentList(se_empty_list)))
+
+  #mixed objects
+  expect_error(SummarizedExperimentList(list(SummarizedExperiment(), SingleCellExperiment())))
 
   #with annotations
   edata = data.frame('ID' = 1:3, row.names = letters[1:3])
@@ -44,9 +48,10 @@ test_that("Constructor works (SummarizedExperiment)", {
 
 test_that("Constructor works (RangedSummarizedExperiment)", {
   library(SummarizedExperiment)
+  library(SingleCellExperiment)
+  library(SpatialExperiment)
 
   #empty object
-  expect_true(validObject(.RangedSummarizedExperimentList())) #internal
   expect_true(validObject(RangedSummarizedExperimentList())) #exported
 
   #empty objects in the list
@@ -56,6 +61,9 @@ test_that("Constructor works (RangedSummarizedExperiment)", {
   expect_error(RangedSummarizedExperimentList(se_empty_list))
   names(se_empty_list) = LETTERS[1:2]
   expect_true(validObject(RangedSummarizedExperimentList(se_empty_list)))
+
+  #mixed objects
+  expect_error(SummarizedExperimentList(list(SummarizedExperiment(), SingleCellExperiment())))
 
   #with annotations
   edata = data.frame('ID' = 1:3, row.names = letters[1:3])
@@ -88,10 +96,11 @@ test_that("Constructor works (RangedSummarizedExperiment)", {
 })
 
 test_that("Constructor works (SingleCellExperiment)", {
+  library(SummarizedExperiment)
   library(SingleCellExperiment)
+  library(SpatialExperiment)
 
   #empty object
-  # expect_true(validObject(.SingleCellExperimentList())) #internal
   expect_true(validObject(SingleCellExperimentList())) #exported
 
   #empty objects in the list
@@ -101,6 +110,9 @@ test_that("Constructor works (SingleCellExperiment)", {
   expect_error(SingleCellExperimentList(sce_empty_list))
   names(sce_empty_list) = LETTERS[1:2]
   expect_true(validObject(SingleCellExperimentList(sce_empty_list)))
+
+  #mixed objects
+  expect_error(SummarizedExperimentList(list(SummarizedExperiment(), SingleCellExperiment())))
 
   #with annotations
   edata = data.frame('ID' = 1:3, row.names = letters[1:3])
@@ -132,10 +144,11 @@ test_that("Constructor works (SingleCellExperiment)", {
 })
 
 test_that("Constructor works (SpatialExperiment)", {
+  library(SummarizedExperiment)
+  library(SingleCellExperiment)
   library(SpatialExperiment)
 
   #empty object
-  # expect_true(validObject(.SpatialExperimentList())) #internal
   expect_true(validObject(SpatialExperimentList())) #exported
 
   #empty objects in the list
@@ -145,6 +158,9 @@ test_that("Constructor works (SpatialExperiment)", {
   expect_error(SpatialExperimentList(spe_empty_list))
   names(spe_empty_list) = LETTERS[1:2]
   expect_true(validObject(SpatialExperimentList(spe_empty_list)))
+
+  #mixed objects
+  expect_error(SummarizedExperimentList(list(SpatialExperiment(), SingleCellExperiment())))
 
   #with annotations
   edata = data.frame('ID' = 1:3, row.names = letters[1:3])
