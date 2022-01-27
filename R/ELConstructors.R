@@ -132,6 +132,10 @@ SpatialExperimentList <-
   #change colnames
   experimentNames = names(experiments)
   if (change.names) {
+    if (is.null(experimentNames)) {
+      experimentNames = seq_len(length(experiments))
+    }
+
     experiments = mapply(function(x, y) {
       #if colnames present, change
       if (!is.null(colnames(x)))
