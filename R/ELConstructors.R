@@ -176,37 +176,38 @@ SpatialExperimentList <-
 
   return(selist)
 }
+
 setValidity2('SummarizedExperimentList', function(object) {
-  # NR = NROW(object)
-  # NC = NCOL(object)
-  # NE = NROW(experimentData(object))
-  # msg = NULL
-  #
+  NR = NROW(object)
+  NC = NCOL(object)
+  NE = NROW(experimentData(object))
+  msg = NULL
+
   # if (length(experiments(object)) != NE) {
   #   msg <- c(msg, "'experimentData' should be equal to the number of experiments")
   # }
-  #
-  # if (length(object@experimentIndex) != NC) {
-  #   msg <- c(msg, "'experimentIndex' should have length equal to the number of samples across all experiments")
-  # }
-  #
-  # if (length(object@experimentIndex) != NC) {
-  #   msg <- c(msg, "'experimentIndex' should have length equal to the number of samples across all experiments")
-  # }
-  #
-  # if (max(object@experimentIndex) > NE) {
-  #   msg <- c(msg, "'experimentIndex' should not have indices greater than the number of experiments")
-  # }
-  #
-  # if (min(object@experimentIndex) < 0) {
-  #   msg <- c(msg, "'experimentIndex' should have non-negative indices")
-  # }
-  #
-  # if (!is(object, 'SummarizedExperiment')) {
-  #   msg <- c(msg, "'experimentIndex' should have non-negative indices")
-  # }
-  #
-  # if (length(msg)) {
-  #   msg
-  # } else TRUE
+
+  if (length(object@experimentIndex) != NC) {
+    msg <- c(msg, "'experimentIndex' should have length equal to the number of samples across all experiments")
+  }
+
+  if (length(object@experimentIndex) != NC) {
+    msg <- c(msg, "'experimentIndex' should have length equal to the number of samples across all experiments")
+  }
+
+  if (max(object@experimentIndex) > NE) {
+    msg <- c(msg, "'experimentIndex' should not have indices greater than the number of experiments")
+  }
+
+  if (min(object@experimentIndex) < 0) {
+    msg <- c(msg, "'experimentIndex' should have non-negative indices")
+  }
+
+  if (!is(object, 'SummarizedExperiment')) {
+    msg <- c(msg, "'experimentIndex' should have non-negative indices")
+  }
+
+  if (length(msg)) {
+    msg
+  } else TRUE
 })
