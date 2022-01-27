@@ -89,7 +89,6 @@ SpatialExperimentList <-
       return(.SpatialExperimentList(spe))
     }
 
-
     .processConstructorData(
       experiments = experiments,
       experimentData = experimentData,
@@ -121,11 +120,7 @@ SpatialExperimentList <-
   )
 
   #check experiments
-  if (is.null(names(experiments))) {
-    stop("'experiments' must be a named list")
-  }
-
-  if (any(!sapply(experiments, is, struct))) {
+  if (!all(sapply(experiments, class) %in% struct)) {
     stop("each experiment in 'experiments' must be of type: ", struct)
   }
 
@@ -133,7 +128,9 @@ SpatialExperimentList <-
   experimentNames = names(experiments)
   if (change.names) {
     if (is.null(experimentNames)) {
-      experimentNames = seq_len(length(experiments))
+      eNames = seq_len(length(experiments))
+    } else {
+      eNames = experimentNames
     }
 
     experiments = mapply(function(x, y) {
@@ -141,12 +138,16 @@ SpatialExperimentList <-
       if (!is.null(colnames(x)))
         colnames(x) = paste(y, colnames(x), sep = '.')
       return(x)
-    }, experiments, experimentNames, SIMPLIFY = FALSE)
+    }, experiments, eNames, SIMPLIFY = FALSE)
   }
 
   #create experimentData if missing
   if (nrow(experimentData) == 0) {
-    experimentData = S4Vectors::DataFrame(row.names = experimentNames)
+    if (is.null(experimentNames)){
+      experimentData = S4Vectors::DataFrame(matrix(nrow = length(experiments), ncol = 0))
+    } else {
+      experimentData = S4Vectors::DataFrame(row.names = experimentNames)
+    }
   } else {
     stopifnot(length(experiments) == nrow(experimentData))
   }
