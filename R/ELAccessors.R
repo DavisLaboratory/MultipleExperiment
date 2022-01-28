@@ -58,7 +58,7 @@ setReplaceMethod("experiments", "ExperimentList", function(x, value) {
 })
 
 #----Subsetting----
-.indexSubset <- function(x, i, j, ..., drop = TRUE) {
+.indexSubsetEL <- function(x, i, j, ..., drop = TRUE) {
   if (missing(j)) {
     #is selecting rows
     x = callNextMethod()
@@ -94,61 +94,13 @@ setReplaceMethod("experiments", "ExperimentList", function(x, value) {
   return(x)
 }
 
-setMethod("[", c("SummarizedExperimentList", "ANY", "ANY"), .indexSubset)
-setMethod("[", c("RangedSummarizedExperimentList", "ANY", "ANY"), .indexSubset)
-setMethod("[", c("SingleCellExperimentList", "ANY", "ANY"), .indexSubset)
-setMethod("[", c("SpatialExperimentList", "ANY", "ANY"), .indexSubset)
+setMethod("[", c("SummarizedExperimentList", "ANY", "ANY"), .indexSubsetEL)
+setMethod("[", c("RangedSummarizedExperimentList", "ANY", "ANY"), .indexSubsetEL)
+setMethod("[", c("SingleCellExperimentList", "ANY", "ANY"), .indexSubsetEL)
+setMethod("[", c("SpatialExperimentList", "ANY", "ANY"), .indexSubsetEL)
 
 setMethod("subset", "ExperimentList", function(x, subset, select, ...) {
   i = S4Vectors:::evalqForSubset(subset, rowData(x, use.names = FALSE), ...)
   j = S4Vectors:::evalqForSubset(select, colData(x), ...)
   return(x[i, j])
-})
-
-#----colData access----
-setMethod("colData", "ExperimentList", function(x, ..., withExperimentData = TRUE) {
-  cdata = callNextMethod()
-
-  #merge with sample data
-  if (withExperimentData) {
-    cdata = cbind(cdata, experimentData(x)[x@experimentIndex, ])
-  }
-
-  return(cdata)
-})
-
-setReplaceMethod("colData", "ExperimentList", function(x, ..., removeExperimentData = TRUE, value) {
-  #remove fields overlapping with experiment data
-  if (removeExperimentData)
-    value = value[, setdiff(colnames(value), colnames(experimentData(x)))]
-  x = callNextMethod()
-  validObject(x)
-
-  return(x)
-})
-
-setMethod("[[", c("ExperimentList", "ANY", "missing"),
-          function(x, i, j, ...) {
-            colData(x)[[i, ...]]
-          })
-
-setReplaceMethod("[[", c("ExperimentList", "ANY", "missing"),
-                 function(x, i, j, ..., value)
-                 {
-                   colData(x)[[i, ...]] <- value
-                   validObject(x)
-                   return(x)
-                 })
-
-.DollarNames.ExperimentList <- function(x, pattern = "") {
-  grep(pattern, names(colData(x)), value=TRUE)
-}
-
-setMethod("$", "ExperimentList", function(x, name) {
-  colData(x)[[name]]
-})
-
-setReplaceMethod("$", "ExperimentList", function(x, name, value) {
-  colData(x)[[name]] <- value
-  return(x)
 })
