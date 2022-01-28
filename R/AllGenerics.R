@@ -20,4 +20,7 @@ setGeneric("experimentData", function(x, ...) standardGeneric("experimentData"))
 setGeneric("experimentData<-", function(x, ..., value) standardGeneric("experimentData<-"))
 
 #' @export
+setGeneric("colWithExperimentData", function(x, ...) standardGeneric("colWithExperimentData"))
+
+#' @export
 setGeneric("elapply", function(x, ...) standardGeneric("elapply"))

@@ -28,6 +28,11 @@ setReplaceMethod("experimentData", "ExperimentList", function(x, value) {
 })
 
 #' @export
+setMethod("colWithExperimentData", "ExperimentList", function(x) {
+  return(cbind(colData(x), experimentData(x)[x@experimentIndex, , drop = FALSE]))
+})
+
+#' @export
 setMethod("nexp", "ExperimentList", function(x) {
   return(nrow(experimentData(x)))
 })
@@ -58,6 +63,7 @@ setReplaceMethod("experiments", "ExperimentList", function(x, value) {
 })
 
 #----Subsetting----
+#' @importFrom methods callNextMethod
 .indexSubsetEL <- function(x, i, j, ..., drop = TRUE) {
   if (missing(j)) {
     #is selecting rows
@@ -80,10 +86,6 @@ setReplaceMethod("experiments", "ExperimentList", function(x, value) {
     ixmap = ixmap[colnames(x)]
     names(ixmap) = NULL
     x@experimentIndex = ixmap
-
-    #----TODO----
-    #deal with cases where experimentData is NULL and entire
-    # experiments are subsetted out
 
     #revert colnames if missing
     if (missingNames) {

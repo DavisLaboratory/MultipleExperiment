@@ -29,6 +29,18 @@ test_that("ExperimentList-specific accessors work", {
   expect_null(experimentNames(spe_list))
   experimentNames(spe_list) = LETTERS[1:2]
   expect_warning((experimentData(spe_list) = expdf), 'NULL')
+
+  #colWithExperimentData
+  mat = matrix(1, 3, 3, dimnames = list(paste0('r', 1:3), paste0('c', 1:3)))
+  spe = SpatialExperiment(assays = list(mat))
+  expdf = matrix(1, 2, 1, dimnames = list(LETTERS[1:2], c('Col1')))
+  spe_list = SpatialExperimentList(list('A' = spe, 'B' = spe), expdf)
+  expect_equal(ncol(colWithExperimentData(spe_list)), 2)
+
+  mat = matrix(1, 3, 3)
+  spe = SpatialExperiment(assays = list(mat))
+  spe_list = SpatialExperimentList(list(spe,spe))
+  expect_equal(ncol(colWithExperimentData(spe_list)), 1)
 })
 
 test_that("Subset functions work", {
