@@ -1,4 +1,7 @@
 #' @export
+setGeneric("nexp", function(x, ...) standardGeneric("nexp"))
+
+#' @export
 setGeneric("experiments", function(x, ...) standardGeneric("experiments"))
 
 #' @export

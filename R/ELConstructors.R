@@ -124,6 +124,11 @@ SpatialExperimentList <-
     stop("each experiment in 'experiments' must be of type: ", struct)
   }
 
+  #coerce matrix and data.frame
+  if (is(experimentData, 'matrix') | is(experimentData, 'data.frame')) {
+    experimentData = as(experimentData, 'DataFrame')
+  }
+
   #change colnames
   experimentNames = names(experiments)
   if (change.names) {
@@ -143,11 +148,8 @@ SpatialExperimentList <-
 
   #create experimentData if missing
   if (nrow(experimentData) == 0) {
-    if (is.null(experimentNames)){
-      experimentData = S4Vectors::DataFrame(matrix(nrow = length(experiments), ncol = 0))
-    } else {
-      experimentData = S4Vectors::DataFrame(row.names = experimentNames)
-    }
+    experimentData = S4Vectors::DataFrame(matrix(nrow = length(experiments), ncol = 0))
+    rownames(experimentData) = experimentNames
   } else {
     stopifnot(length(experiments) == nrow(experimentData))
   }

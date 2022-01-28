@@ -6,19 +6,40 @@ setMethod("experimentData", "ExperimentList", function(x) {
 
 #' @export
 setReplaceMethod("experimentData", "ExperimentList", function(x, value) {
+  #if null, replace with empty data frame
+  if (is.null(value)) {
+    value = S4Vectors::DataFrame(matrix(nrow = nrow(x@experimentData), ncol = 0))
+    rownames(value) = rownames(x@experimentData)
+  }
+
+  #coerce matrix and data.frame
+  if (is(value, 'matrix') | is(value, 'data.frame')) {
+    value = as(value, 'DataFrame')
+  }
+
+  #warn if names are being erased
+  if (is.null(rownames(value)) & !is.null(rownames(x@experimentData))) {
+    warning("'experimentNames' will be removed because rownames are NULL")
+  }
+
   x@experimentData = value
   validObject(x)
   return(x)
 })
 
 #' @export
+setMethod("nexp", "ExperimentList", function(x) {
+  return(nrow(experimentData(x)))
+})
+
+#' @export
 setMethod("experimentNames", "ExperimentList", function(x) {
-  return(rownames(x@experimentData))
+  return(rownames(experimentData(x)))
 })
 
 #' @export
 setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
-  rownames(x@experimentData) = value
+  rownames(experimentData(x)) = value
   validObject(x)
   return(x)
 })
@@ -36,50 +57,47 @@ setReplaceMethod("experiments", "ExperimentList", function(x, value) {
   return(x)
 })
 
-#' @export
-setMethod("length", "ExperimentList", function(x) {
-  return(nrow(experimentData(x)))
-})
-
-setMethod("names", "ExperimentList", function(x) experimentNames(x))
-setReplaceMethod("names", "ExperimentList", function(x, value) {
-  `experimentNames<-`(x, value)
-  validObject(x)
-  return(x)
-})
-
 #----Subsetting----
-setMethod("[", c("ExperimentList", "ANY", "ANY"),
-          function(x, i, j, ..., drop = TRUE)
-          {
-            if (is.missing(j)) {
-              #is selecting rows
-              x = callNextMethod()
-            } else {
-              #give temp names if missing
-              misingNames = is.null(colnames(x))
-              if (missingNames) {
-                colnames(x) = as.character(1:ncol(x))
-              }
+.indexSubset <- function(x, i, j, ..., drop = TRUE) {
+  if (missing(j)) {
+    #is selecting rows
+    x = callNextMethod()
+  } else {
+    #give temp names if missing
+    missingNames = is.null(colnames(x))
+    if (missingNames) {
+      colnames(x) = as.character(1:ncol(x))
+    }
 
-              #create index map
-              ixmap = x@experimentIndex
-              names(ixmap) = colnames(x)
+    #create index map
+    ixmap = x@experimentIndex
+    names(ixmap) = colnames(x)
 
-              #subset and/or select
-              x = callNextMethod()
+    #subset and/or select
+    x = callNextMethod()
 
-              #subset indices
-              ixmap = ixmap[colnames(x)]
-              names(ixmap) = NULL
-              x@experimentIndex = ixmap
+    #subset indices
+    ixmap = ixmap[colnames(x)]
+    names(ixmap) = NULL
+    x@experimentIndex = ixmap
 
-              #revert colnames if missing
-              if (missingNames) {
-                colnames(x) = NULL
-              }
-            }
-          })
+    #----TODO----
+    #deal with cases where experimentData is NULL and entire
+    # experiments are subsetted out
+
+    #revert colnames if missing
+    if (missingNames) {
+      colnames(x) = NULL
+    }
+  }
+
+  return(x)
+}
+
+setMethod("[", c("SummarizedExperimentList", "ANY", "ANY"), .indexSubset)
+setMethod("[", c("RangedSummarizedExperimentList", "ANY", "ANY"), .indexSubset)
+setMethod("[", c("SingleCellExperimentList", "ANY", "ANY"), .indexSubset)
+setMethod("[", c("SpatialExperimentList", "ANY", "ANY"), .indexSubset)
 
 setMethod("subset", "ExperimentList", function(x, subset, select, ...) {
   i = S4Vectors:::evalqForSubset(subset, rowData(x, use.names = FALSE), ...)

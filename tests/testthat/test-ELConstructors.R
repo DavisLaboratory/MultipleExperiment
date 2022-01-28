@@ -10,7 +10,7 @@ test_that("Constructor works (SummarizedExperiment)", {
   se_empty1 = SummarizedExperiment()
   se_empty2 = SummarizedExperiment()
   se_empty_list = list(se_empty1, se_empty2)
-  expect_error(SummarizedExperimentList(se_empty_list))
+  expect_true(validObject(SummarizedExperimentList(se_empty_list)))
   names(se_empty_list) = LETTERS[1:2]
   expect_true(validObject(SummarizedExperimentList(se_empty_list)))
 
@@ -58,7 +58,7 @@ test_that("Constructor works (RangedSummarizedExperiment)", {
   se_empty1 = SummarizedExperiment(rowRanges = GRangesList())
   se_empty2 = SummarizedExperiment(rowRanges = GRangesList())
   se_empty_list = list(se_empty1, se_empty2)
-  expect_error(RangedSummarizedExperimentList(se_empty_list))
+  expect_true(validObject(RangedSummarizedExperimentList(se_empty_list)))
   names(se_empty_list) = LETTERS[1:2]
   expect_true(validObject(RangedSummarizedExperimentList(se_empty_list)))
 
@@ -107,7 +107,7 @@ test_that("Constructor works (SingleCellExperiment)", {
   sce_empty1 = SingleCellExperiment()
   sce_empty2 = SingleCellExperiment()
   sce_empty_list = list(sce_empty1, sce_empty2)
-  expect_error(SingleCellExperimentList(sce_empty_list))
+  expect_true(validObject(SingleCellExperimentList(sce_empty_list)))
   names(sce_empty_list) = LETTERS[1:2]
   expect_true(validObject(SingleCellExperimentList(sce_empty_list)))
 
@@ -155,7 +155,7 @@ test_that("Constructor works (SpatialExperiment)", {
   spe_empty1 = SpatialExperiment()
   spe_empty2 = SpatialExperiment()
   spe_empty_list = list(spe_empty1, spe_empty2)
-  expect_error(SpatialExperimentList(spe_empty_list))
+  expect_true(validObject(SpatialExperimentList(spe_empty_list)))
   names(spe_empty_list) = LETTERS[1:2]
   expect_true(validObject(SpatialExperimentList(spe_empty_list)))
 
