@@ -49,19 +49,6 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
   return(x)
 })
 
-#' @export
-setMethod("experiments", "ExperimentList", function(x) {
-  #----TODO----
-  return(rownames(x@experimentData))
-})
-
-#' @export
-setReplaceMethod("experiments", "ExperimentList", function(x, value) {
-  #----TODO----
-  validObject(x)
-  return(x)
-})
-
 #----Subsetting----
 #' Transform character indices to numeric indices
 #'
@@ -174,4 +161,33 @@ setMethod("subset", "ExperimentList", function(x, subset, select, ...) {
   i = S4Vectors:::evalqForSubset(subset, rowData(x, use.names = FALSE), ...)
   j = S4Vectors:::evalqForSubset(select, colData(x), ...)
   return(x[i, j])
+})
+
+#----experiments----
+#' @export
+setMethod("experiments", "ExperimentList", function(x, change.names = TRUE) {
+  #revert names
+  if (change.names && !is.null(experimentNames(x))) {
+    regex = gsub('\\.', '\\\\\\.', paste(experimentNames(x), sep = '|'))
+    regex = sprintf('(%s)\\.', regex)
+    colnames(x) = gsub(regex, '', colnames(x))
+  }
+
+  #split into different assays
+  exps = sapply(seq_len(nexp(x)), function(i) {
+    #subset
+    se = x[, x@experimentIndex == i]
+    #coerce to super class
+    se = as(se, is(se)[2])
+  })
+  names(exps) = experimentNames(x)
+
+  return(exps)
+})
+
+#' @export
+setReplaceMethod("experiments", "ExperimentList", function(x, value) {
+  #----TODO----
+  validObject(x)
+  return(x)
 })
