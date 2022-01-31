@@ -43,13 +43,13 @@ test_that("ExperimentList-specific accessors work", {
   expect_equal(ncol(colWithExperimentData(spe_list)), 1)
 
   #experiments
-  mat = matrix(1, 3, 3, dimnames = list(paste0('r', 1:3), paste0('c', 1:3)))
+  mat = matrix(1, 3, 3, dimnames = list(paste0('row', 1:3), paste0('col', 1:3)))
   spe = SpatialExperiment(assays = list(mat))
   expdf = matrix(1, 2, 1, dimnames = list(LETTERS[1:2], c('Col1')))
   spe_list = SpatialExperimentList(list('A' = spe, 'B' = spe), expdf)
   expect_equal(length(experiments(spe_list)), 2)
   expect_equal(names(experiments(spe_list)), LETTERS[1:2])
-  expect_equal(colnames(experiments(spe_list)[[1]]), paste0('c', 1:3))
+  expect_equal(colnames(experiments(spe_list)[[1]]), paste0('col', 1:3))
   expect_s4_class(experiments(spe_list)[[1]], 'SpatialExperiment')
 
   mat = matrix(1, 3, 3)

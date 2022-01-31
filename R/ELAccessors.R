@@ -168,7 +168,7 @@ setMethod("subset", "ExperimentList", function(x, subset, select, ...) {
 setMethod("experiments", "ExperimentList", function(x, change.names = TRUE) {
   #revert names
   if (change.names && !is.null(experimentNames(x))) {
-    regex = gsub('\\.', '\\\\\\.', paste(experimentNames(x), sep = '|'))
+    regex = gsub('\\.', '\\\\\\.', paste(experimentNames(x), collapse = '|'))
     regex = sprintf('(%s)\\.', regex)
     colnames(x) = gsub(regex, '', colnames(x))
   }
