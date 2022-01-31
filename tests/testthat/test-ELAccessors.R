@@ -64,6 +64,14 @@ test_that("Subset functions work", {
   expect_equal(spe_list[, -c(1, 4)]@experimentIndex, rep(1:2, each = 2))
   expect_equal(spe_list[, -c(1:3)]@experimentIndex, rep(2, 3))
 
+  #subset experiments
+  expect_equal(ncol(spe_list[, , exp = 1]), 3)
+  expect_equal(dim(spe_list[1:2, 2:5, exp = 1]), c(2, 2))
+  expect_error(colnames(spe_list[, , exp = 3]))
+  expect_equal(spe_list[, -c(1, 4), exp = -2]@experimentIndex, rep(1, each = 2))
+  expect_equal(dim(spe_list[, (1:3), exp = 2]), c(3, 0))
+  expect_equal(spe_list[, c(FALSE, TRUE, TRUE), exp = -2]@experimentIndex, rep(1, each = 2))
+
   #with names
   mat = matrix(1, 3, 3, dimnames = list(paste0('r', 1:3), paste0('c', 1:3)))
   spe = SpatialExperiment(assays = list(mat))
@@ -77,12 +85,18 @@ test_that("Subset functions work", {
   expect_error(rownames(spe_list[c('r1', 'r4'), ]))
 
   #subset cols
-  expect_equal(ncol(spe_list[, 1:2]), 2)
+  expect_equal(ncol(spe_list[, c('A.c1', 'A.c2')]), 2)
   expect_equal(colnames(spe_list[, 1:2]), c('A.c1', 'A.c2'))
   expect_equal(colnames(spe_list[, c('A.c1', 'B.c1')]), c('A.c1', 'B.c1'))
   expect_error(colnames(spe_list[, c('A.c1', 'A.c4')]))
-  expect_equal(spe_list[, -c(1, 4)]@experimentIndex, rep(1:2, each = 2))
-  expect_equal(spe_list[, -c(1:3)]@experimentIndex, rep(2, 3))
+
+  #subset experiments
+  expect_equal(ncol(spe_list[, , exp = 'A']), 3)
+  expect_equal(dim(spe_list[c('r1', 'r2'), c('A.c2', 'A.c3', 'B.c1'), exp = 'A']), c(2, 2))
+  expect_error(colnames(spe_list[, , exp = 'C']))
+  expect_equal(spe_list[, -c(1, 4), exp = 'A']@experimentIndex, rep(1, each = 2))
+  expect_equal(spe_list[, c(FALSE, TRUE, TRUE), exp = 'A']@experimentIndex, rep(1, each = 2))
+  expect_equal(dim(spe_list[, (1:3), exp = c(FALSE, TRUE)]), c(3, 0))
 
   #SummarizedExperiment
   mat = matrix(1, 3, 3)

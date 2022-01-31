@@ -63,36 +63,105 @@ setReplaceMethod("experiments", "ExperimentList", function(x, value) {
 })
 
 #----Subsetting----
+#' Transform character indices to numeric indices
+#'
+#' @param idx a character vector containing character indices
+#' @param txt a character vector containing the reference list
+#' @param fmt a character stating the format to use for error reporting
+#'
+#' @return a numeric vector containing numeric indices
+.ExperimentList.charbound <-  function(idx, txt, fmt) {
+  orig = idx
+  idx = match(idx, txt)
+  #error reporting for missing names
+  if (any(bad = is.na(idx))) {
+    msg = paste(S4Vectors:::selectSome(orig[bad]), collapse = " ")
+    stop(sprintf(fmt, msg))
+  }
+  return(idx)
+}
+
+#' Convert numeric indices to logical
+#'
+#' @param idx a numeric containing indices
+#' @param len a numeric stating the maximum possible index
+#' @param msg a character stating the error message to produce when indices are
+#'   out of bounds
+#'
+#' @return a logical containing indices
+#'
+#' @examples
+.ixNumericToLogical <- function(idx, len, msg) {
+  if (any(idx < -len || idx > len)) {
+    stop(msg)
+  }
+  #convert to logical
+  idx_logical = rep(FALSE, len)
+  idx_logical[idx] = TRUE
+  return(idx_logical)
+}
+
 #' @importFrom methods callNextMethod
-.indexSubsetEL <- function(x, i, j, ..., drop = TRUE) {
-  if (missing(j)) {
-    #is selecting rows
-    x = callNextMethod()
-  } else {
-    #give temp names if missing
-    missingNames = is.null(colnames(x))
-    if (missingNames) {
-      colnames(x) = as.character(1:ncol(x))
-    }
+.indexSubsetEL <- function(x, i, j, ..., exp, drop = TRUE) {
+  #no subsetting
+  if (missing(i) && missing(j) && missing(exp))
+    return(x)
 
-    #create index map
-    ixmap = x@experimentIndex
-    names(ixmap) = colnames(x)
-
-    #subset and/or select
-    x = callNextMethod()
-
-    #subset indices
-    ixmap = ixmap[colnames(x)]
-    names(ixmap) = NULL
-    x@experimentIndex = ixmap
-
-    #revert colnames if missing
-    if (missingNames) {
-      colnames(x) = NULL
-    }
+  #subset rows only
+  if (missing(j) && missing(exp)) {
+    x = callNextMethod(x, i, j, ...)
+    return(x)
   }
 
+  #subset columns
+  if (!missing(j)) {
+    #convert indices to numeric indices
+    if (is.character(j)) {
+      #convert character indices to numeric
+      fmt = paste0("<", class(x), ">[j,] index out of bounds: %s")
+      j = .ExperimentList.charbound(j, colnames(x), fmt)
+    }
+    if (is.numeric(j))
+      j = .ixNumericToLogical(j, ncol(x), paste0("<", class(x), ">[j,] index out of bounds"))
+  } else {
+    j = TRUE
+  }
+
+  #subset experiments
+  if (!missing(exp)) {
+    #convert indices to numeric indices
+    if (is.character(exp)) {
+      #convert character indices to numeric
+      fmt = paste0("<", class(x), ">[exp,] index out of bounds: %s")
+      exp = .ExperimentList.charbound(exp, experimentNames(x), fmt)
+    }
+    if (is.numeric(exp))
+      exp = .ixNumericToLogical(exp, nexp(x), paste0("<", class(x), ">[exp,] index out of bounds"))
+
+    #identify columns to select
+    j = j & x@experimentIndex %in% seq_len(nexp(x))[exp]
+  }
+
+  #subset and/or select
+  x = callNextMethod(x, i, j, ...)
+
+  #subset experimentIndex
+  x@experimentIndex = x@experimentIndex[j]
+
+  #update experimentIndex and experimentData if subsetting experiment
+  if (!missing(exp) && !any(exp)) {
+    #build index map from old to new indices
+    ixmap = rep(NA_integer_, length(exp))
+    ixmap[exp] = seq_len(sum(exp))
+
+    #transform indices
+    x@experimentIndex = ixmap[x@experimentIndex]
+
+    #update experiment Data
+    experimentData(x) = experimentData(x)[exp, ]
+  }
+
+  validObject(x)
   return(x)
 }
 

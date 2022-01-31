@@ -194,6 +194,10 @@ setValidity2('SummarizedExperimentList', function(object) {
   #   msg <- c(msg, "'experimentData' should be equal to the number of experiments")
   # }
 
+  if (any(is.na(object@experimentIndex))) {
+    msg <- c(msg, "'experimentIndex' should not have NAs")
+  }
+
   if (length(object@experimentIndex) != NC) {
     msg <- c(msg, "'experimentIndex' should have length equal to the number of samples across all experiments")
   }
