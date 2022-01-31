@@ -190,10 +190,6 @@ setValidity2('SummarizedExperimentList', function(object) {
   NE = NROW(experimentData(object))
   msg = NULL
 
-  if (max(object@experimentIndex) > NE) {
-    msg <- c(msg, "'experimentData' should have rows equal to the number of experiments")
-  }
-
   if (any(is.na(object@experimentIndex))) {
     msg <- c(msg, "'experimentIndex' should not have NAs")
   }
