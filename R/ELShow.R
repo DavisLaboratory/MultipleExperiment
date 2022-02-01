@@ -3,7 +3,7 @@
 .showEL <- function(object) {
   ## header
   classLineage = is(object)
-  cat(classLineage[1], ' with ', nexp(object), ' ', classLineage[2], 's\n', sep = '')
+  cat('ExperimentList with ', nexp(object), ' ', classLineage[2], 's\n', sep = '')
 
   ## Experiment data
   callNextMethod()

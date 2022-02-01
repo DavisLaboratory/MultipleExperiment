@@ -1,114 +1,17 @@
-#' @inheritParams SummarizedExperimentList
-#' @param experiments a named list of [SummarizedExperiment],
-#'   [RangedSummarizedExperiment], [SingleCellExperiment], or
-#'   [SpatialExperiment] objects.
-#' @param experimentData a [DataFrame] with experiment specific annotations. The
-#'   number of rows in the data frame should be equal to the number of
-#'   experiments. Row names of the data frame should match names of experiments
-#'   (unless check.names is FALSE).
-#' @param check.names a logical specifying whether rownames of `experimentData`
-#'   should be checked against experiment names in `experiments`.
-#' @param change.names a logical specifying whether experiment names should be
-#'   appended to the column names of individual observations.
-#'
 #' @export
-SummarizedExperimentList <- function(experiments = SimpleList(),
-                                     experimentData = DataFrame(),
-                                     check.names = TRUE,
-                                     change.names = TRUE) {
-  #no experiment
-  if (length(experiments) == 0) {
-    se = SummarizedExperiment::SummarizedExperiment()
-    return(.SummarizedExperimentList(se))
-  }
-
-  .processConstructorData(
-    experiments = experiments,
-    experimentData = experimentData,
-    check.names = check.names,
-    change.names = change.names,
-    struct = 'SummarizedExperiment'
-  )
-}
-
-#' @inheritParams SummarizedExperimentList
-#' @export
-RangedSummarizedExperimentList <-
-  function(experiments = SimpleList(),
-           experimentData = DataFrame(),
-           check.names = TRUE,
-           change.names = TRUE) {
-    #no experiment
-    if (length(experiments) == 0) {
-      gr = GenomicRanges::GRangesList()
-      se = SummarizedExperiment::SummarizedExperiment(rowRanges = gr)
-      return(.RangedSummarizedExperimentList(se))
-    }
-
-    .processConstructorData(
-      experiments = experiments,
-      experimentData = experimentData,
-      check.names = check.names,
-      change.names = change.names,
-      struct = 'RangedSummarizedExperiment'
-    )
-  }
-
-#' @inheritParams SummarizedExperimentList
-#' @export
-SingleCellExperimentList <-
-  function(experiments = SimpleList(),
-           experimentData = DataFrame(),
-           check.names = TRUE,
-           change.names = TRUE) {
-    #no experiment
-    if (length(experiments) == 0) {
-      sce = SingleCellExperiment::SingleCellExperiment()
-      return(.SingleCellExperimentList(sce))
-    }
-
-    .processConstructorData(
-      experiments = experiments,
-      experimentData = experimentData,
-      check.names = check.names,
-      change.names = change.names,
-      struct = 'SingleCellExperiment'
-    )
-  }
-
-#' @inheritParams SummarizedExperimentList
-#' @export
-SpatialExperimentList <-
-  function(experiments = SimpleList(),
-           experimentData = DataFrame(),
-           check.names = TRUE,
-           change.names = TRUE) {
-    #no experiment
-    if (length(experiments) == 0) {
-      spe = SpatialExperiment::SpatialExperiment()
-      return(.SpatialExperimentList(spe))
-    }
-
-    .processConstructorData(
-      experiments = experiments,
-      experimentData = experimentData,
-      check.names = check.names,
-      change.names = change.names,
-      struct = 'SpatialExperiment'
-    )
-  }
-
-.processConstructorData <- function(experiments = SimpleList(),
+ExperimentList <- function(experiments = SimpleList(),
                                     experimentData = DataFrame(),
                                     check.names = TRUE,
-                                    change.names = TRUE,
-                                    struct = c(
-                                      'SummarizedExperiment',
-                                      'RangedSummarizedExperiment',
-                                      'SingleCellExperiment',
-                                      'SpatialExperiment'
-                                    )) {
-  struct = match.arg(struct)
+                                    change.names = TRUE) {
+  if (length(experiments) == 0) {
+    return(.SummarizedExperimentList())
+  }
+
+  #check experiments
+  struct = unique(sapply(experiments, class))
+  if (length(struct) != 1) {
+    stop("each experiment in 'experiments' must be of the same type")
+  }
 
   #identify constructor
   constructorFun = switch(
@@ -118,11 +21,6 @@ SpatialExperimentList <-
     SingleCellExperiment = .SingleCellExperimentList,
     SpatialExperiment = .SpatialExperimentList
   )
-
-  #check experiments
-  if (!all(sapply(experiments, class) %in% struct)) {
-    stop("each experiment in 'experiments' must be of type: ", struct)
-  }
 
   #coerce matrix and data.frame
   if (is(experimentData, 'matrix') | is(experimentData, 'data.frame')) {

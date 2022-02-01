@@ -10,7 +10,7 @@ setMethod("elapply", "ExperimentList", function(x, FUN, ..., simplify = TRUE, ch
   if (isTRUE(simplify)) {
     if (all(sapply(results, is, is(x)[2]))) {
       results = do.call(
-        is(x)[1],
+        ExperimentList,
         args = list(
           experiments = results,
           experimentData = experimentData,
