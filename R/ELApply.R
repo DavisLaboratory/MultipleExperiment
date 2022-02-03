@@ -1,3 +1,4 @@
+#' @rdname ExperimentList-methods
 #' @export
 setMethod("elapply", "ExperimentList", function(x, FUN, ..., simplify = TRUE, check.names = TRUE, change.names = TRUE) {
   experimentData = experimentData(x)

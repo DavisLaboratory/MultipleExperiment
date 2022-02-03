@@ -1,9 +1,101 @@
+041310#' @name ExperimentList-methods
+#'
+#' @title Methods for ExperimentList objects
+#'
+#' @aliases experiments nexp experimentData experimentData<- elapply
+#'
+#' @description The \code{\link{ExperimentList}} class provides a family of
+#'   methods to manage and process data from multiple experiments.
+#'
+#' @param x A \code{\link{SummarizedExperimentList}},
+#'   \code{\link{RangedSummarizedExperimentList}},
+#'   \code{\link{SingleCellExperimentList}}, or
+#'   \code{\link{SpatialExperimentList}} object.
+#' @param value Replacement value for replacement methods.
+#' @param i A subscript that can act to subset the rows of \code{x}.
+#' @param j A subscript that can act to subset the columns of \code{x}.
+#' @param exp A subscript that can act to subset experiments from \code{x}.
+#' @param drop A \code{logical(1)}, ignored by these methods.
+#' @param FUN The function to be applied to each element of \code{x}: see
+#'   ‘Details’.
+#' @param simplify A \code{logical(1)} or \code{character(1)} string; should the
+#'   result be simplified to a ExperimentList, vector, matrix or higher
+#'   dimensional array if possible? The default value, TRUE, returns an
+#'   \code{ExperimentList} if possible, or a vector or matrix if appropriate,
+#'   whereas if simplify = "array" the result may be an array of “rank”
+#'   (=length(dim(.))) one higher than the result of FUN(X[[i]]).
+#' @inheritParams SummarizedExperiment::SummarizedExperiment
+#' @inheritParams ExperimentList
+#'
+#' @details Additional details for each type of data attribute are provided
+#'   below.
+#'
+#' @section Constructor: \describe{ ExperimentList instances are constructed
+#'   using the ExperimentList function documented in
+#'   ?\code{\link{ExperimentList}}.
+#' }
+#'
+#' @section Accessors: \describe{ In the following code snippets, \code{x} is a
+#'   ExperimentList object.
+#'   \item{\code{experimentData(x), experimentData(x) <- value}: }{Get or set
+#'   the experiment data. \code{value} is a \code{DataFrame} object. Row names
+#'   of value must be \code{NULL} or consistent with the existing experiment
+#'   names of x.}
+#'   \item{\code{colWithExperimentData(x)}: }{Get the column data merged with
+#'   experiment data.}
+#'   \item{\code{nexp(x)}: }{Get the number of experiments in the
+#'   \code{ExperimentList} object.}
+#'   \item{\code{experimentNames(x), experimentNames(x) <- value}: }{Get or set
+#'   the names of experiments.}
+#'   \item{\code{experiments(x)}: }{Get a list of the experiments (for example,
+#'   a list of \code{SummarizedExperiments}).}
+#' }
+#'
+#' @section Subsetting: \describe{ In the following code snippets, \code{x} is a
+#'   ExperimentList object.
+#'   \item{\code{x[i, j, exp]}: }{Create or replace a subset of x. \code{i, j,
+#'   exp} can be \code{numeric}, \code{logical}, \code{character}, or
+#'   \code{missing}.}
+#'   \item{\code{subset(x, subset, select, experiment)}: }{Create a subset of
+#'   \code{x} using an expression subset referring to columns of
+#'   \code{rowData(x)} and / or select referring to column names of
+#'   \code{colData(x)} and / or experiment referring to column names of
+#'   \code{experimentData(x)}.}
+#' }
+#'
+#' @section Apply: \describe{ In the following code snippets, \code{x} is a
+#'   ExperimentList object.
+#'   \item{\code{elapply(x, FUN, ..., simplify = TRUE, check.names = TRUE,
+#'   change.names = TRUE)}: }{Apply functions to each experiment within an
+#'   \code{ExperimentList} and potentially simplify the results.}
+#' }
+#'
+#' @seealso \code{\link{ExperimentList}}, \code{\link{SummarizedExperiment}},
+#'   \code{\link{RangedSummarizedExperiment}},
+#'   \code{\link{SingleCellExperiment}}, \link{SpatialExperiment}}
+#'
+#' @examples
+#' example(ExperimentList)
+#'
+#' nexp(el)
+#' experimentData(el)
+#' colWithExperimentData(el)
+#' experimentNames(el)
+#' el[1:10, 1:10]
+#' el[, exp = 'PatientA']
+#' elapply(el, dim)
+#' elapply(el, dim, simplify = FALSE)
+#'
+NULL
+
 #----EL-specific----
+#' @rdname ExperimentList-methods
 #' @export
 setMethod("experimentData", "ExperimentList", function(x) {
   return(x@experimentData)
 })
 
+#' @rdname ExperimentList-methods
 #' @export
 setReplaceMethod("experimentData", "ExperimentList", function(x, value) {
   #if null, replace with empty data frame
@@ -27,21 +119,25 @@ setReplaceMethod("experimentData", "ExperimentList", function(x, value) {
   return(x)
 })
 
+#' @rdname ExperimentList-methods
 #' @export
 setMethod("colWithExperimentData", "ExperimentList", function(x) {
   return(cbind(colData(x), experimentData(x)[x@experimentIndex, , drop = FALSE]))
 })
 
+#' @rdname ExperimentList-methods
 #' @export
 setMethod("nexp", "ExperimentList", function(x) {
   return(nrow(experimentData(x)))
 })
 
+#' @rdname ExperimentList-methods
 #' @export
 setMethod("experimentNames", "ExperimentList", function(x) {
   return(rownames(experimentData(x)))
 })
 
+#' @rdname ExperimentList-methods
 #' @export
 setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
   rownames(experimentData(x)) = value
@@ -76,8 +172,6 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
 #'   out of bounds
 #'
 #' @return a logical containing indices
-#'
-#' @examples
 .ixNumericToLogical <- function(idx, len, msg) {
   if (any(idx < -len || idx > len)) {
     stop(msg)
@@ -152,18 +246,25 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
   return(x)
 }
 
+#' @rdname ExperimentList-methods
 setMethod("[", c("SummarizedExperimentList", "ANY", "ANY"), .indexSubsetEL)
+#' @rdname ExperimentList-methods
 setMethod("[", c("RangedSummarizedExperimentList", "ANY", "ANY"), .indexSubsetEL)
+#' @rdname ExperimentList-methods
 setMethod("[", c("SingleCellExperimentList", "ANY", "ANY"), .indexSubsetEL)
+#' @rdname ExperimentList-methods
 setMethod("[", c("SpatialExperimentList", "ANY", "ANY"), .indexSubsetEL)
 
-setMethod("subset", "ExperimentList", function(x, subset, select, ...) {
+#' @rdname ExperimentList-methods
+setMethod("subset", "ExperimentList", function(x, subset, select, ..., experiment) {
   i = S4Vectors:::evalqForSubset(subset, rowData(x, use.names = FALSE), ...)
   j = S4Vectors:::evalqForSubset(select, colData(x), ...)
-  return(x[i, j])
+  exp = S4Vectors:::evalqForSubset(experiment, experimentData(x), ...)
+  return(x[i, j, exp = exp])
 })
 
 #----experiments----
+#' @rdname ExperimentList-methods
 #' @export
 setMethod("experiments", "ExperimentList", function(x, change.names = TRUE) {
   #revert names
@@ -183,11 +284,4 @@ setMethod("experiments", "ExperimentList", function(x, change.names = TRUE) {
   names(exps) = experimentNames(x)
 
   return(exps)
-})
-
-#' @export
-setReplaceMethod("experiments", "ExperimentList", function(x, value) {
-  #----TODO----
-  validObject(x)
-  return(x)
 })

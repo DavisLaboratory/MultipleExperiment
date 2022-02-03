@@ -5,9 +5,6 @@ setGeneric("nexp", function(x, ...) standardGeneric("nexp"))
 setGeneric("experiments", function(x, ...) standardGeneric("experiments"))
 
 #' @export
-setGeneric("experiments<-", function(x, ..., value) standardGeneric("experiments<-"))
-
-#' @export
 setGeneric("experimentNames", function(x, ...) standardGeneric("experimentNames"))
 
 #' @export

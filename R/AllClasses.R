@@ -1,11 +1,3 @@
-#' An S4 class to manage lists of related SummarizedExperiment objects
-#'
-#' @slot experimentData A [DataFrame] object describing the experiments. Row
-#'   names, if present, become the experiment names of the Experiment objects.
-#'   The number of rows of the DataFrame must equal the number of experiments.
-#' @slot experimentIndex A [numeric] object containing experiment indices of
-#'   experiment each column belongs to.
-#'
 #' @export
 #' @import methods
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
@@ -15,14 +7,6 @@
   contains = 'SummarizedExperiment'
 )
 
-#' An S4 class to manage lists of related RangedSummarizedExperiment objects
-#'
-#' @slot experimentData A [DataFrame] object describing the experiments. Row
-#'   names, if present, become the experiment names of the Experiment objects.
-#'   The number of rows of the DataFrame must equal the number of experiments.
-#' @slot experimentIndex A [numeric] object containing experiment indices of
-#'   experiment each column belongs to.
-#'
 #' @export
 #' @import methods
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
@@ -32,14 +16,6 @@
   contains = 'RangedSummarizedExperiment'
 )
 
-#' An S4 class to manage lists of related SingleCellExperiment objects
-#'
-#' @slot experimentData A [DataFrame] object describing the experiments. Row
-#'   names, if present, become the experiment names of the Experiment objects.
-#'   The number of rows of the DataFrame must equal the number of experiments.
-#' @slot experimentIndex A [numeric] object containing experiment indices of
-#'   experiment each column belongs to.
-#'
 #' @export
 #' @import methods
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
@@ -49,14 +25,6 @@
   contains = 'SingleCellExperiment'
 )
 
-#' An S4 class to manage lists of related SpatialExperiment objects
-#'
-#' @slot experimentData A [DataFrame] object describing the experiments. Row
-#'   names, if present, become the experiment names of the Experiment objects.
-#'   The number of rows of the DataFrame must equal the number of experiments.
-#' @slot experimentIndex A [numeric] object containing experiment indices of
-#'   experiment each column belongs to.
-#'
 #' @export
 #' @import methods
 #' @importClassesFrom SpatialExperiment SpatialExperiment
