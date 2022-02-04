@@ -1,3 +1,9 @@
+#' @exportMethod coerce
+#' @importClassesFrom SpatialExperiment SpatialExperiment
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
+#' @importClassesFrom SummarizedExperiment SummarizedExperiment
+
 .ExperimentList.coerce <- function(x,
                                    destclass = c(
                                      'SummarizedExperimentList',
@@ -10,9 +16,12 @@
   experimentIndex = x@experimentIndex
 
   #coerce
+  #convert to super class (e.g., from SpatialExperimentList to SpatialExperiment)
   x = x |>
     as(is(x)[2]) |>
+    #convert to sibling class (e.g., SingleCellExperiment)
     as(gsub('List', '', destclass)) |>
+    #convert to the respective ExperimentList subclass (e.g., SingleCellExperimentList)
     as(destclass)
   x@experimentData = experimentData
   x@experimentIndex = experimentIndex
@@ -21,26 +30,18 @@
   return(x)
 }
 
-#' @exportMethod coerce
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
 setAs("ExperimentList", "SummarizedExperimentList", function(from) {
   .ExperimentList.coerce(from, 'SummarizedExperimentList')
 })
 
-#' @exportMethod coerce
-#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
 setAs("ExperimentList", "RangedSummarizedExperimentList", function(from) {
   .ExperimentList.coerce(from, 'RangedSummarizedExperimentList')
 })
 
-#' @exportMethod coerce
-#' @importClassesFrom SingleCellExperiment SingleCellExperiment
 setAs("ExperimentList", "SingleCellExperimentList", function(from) {
   .ExperimentList.coerce(from, 'SingleCellExperimentList')
 })
 
-#' @exportMethod coerce
-#' @importClassesFrom SpatialExperiment SpatialExperiment
 setAs("ExperimentList", "SpatialExperimentList", function(from) {
   .ExperimentList.coerce(from, 'SpatialExperimentList')
 })
