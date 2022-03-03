@@ -164,5 +164,5 @@ elapply(el, dim, simplify = FALSE)
 \seealso{
 \code{\link{ExperimentList}}, \code{\link{SummarizedExperiment}},
 \code{\link{RangedSummarizedExperiment}},
-\code{\link{SingleCellExperiment}}, \link{SpatialExperiment}}
+\code{\link{SingleCellExperiment}}, \code{\link{SpatialExperiment}}
 }
