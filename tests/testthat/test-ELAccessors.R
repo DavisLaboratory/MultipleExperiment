@@ -158,3 +158,22 @@ test_that("Subset functions work", {
   expect_equal(sce_list[, -c(1, 4)]@experimentIndex, rep(1:2, each = 2))
   expect_equal(sce_list[, -c(1:3)]@experimentIndex, rep(2, 3))
 })
+
+test_that("Subset functions work on imgData", {
+  library(SpatialExperiment)
+
+  dir = system.file(file.path("extdata", "10xVisium"), package = "SpatialExperiment")
+  sample_ids = c("section1", "section2")
+  samples = file.path(dir, sample_ids)
+  spe = read10xVisium(samples, sample_ids,
+                        type = "sparse", data = "raw",
+                        images = "lowres", load = FALSE)
+
+  #subset imgData works for SPEList
+  imgData(spe) = imgData(spe)[1, ]
+  el = ExperimentList(list(spe, spe))
+
+  expect_equal(nrow(imgData(el)), 2)
+  expect_equal(nrow(imgData(el[,, exp = 1])), 1)
+  expect_equal(nrow(imgData(el[,, exp = -1])), 1)
+})

@@ -72,7 +72,7 @@
 #'
 #' @seealso \code{\link{ExperimentList}}, \code{\link{SummarizedExperiment}},
 #'   \code{\link{RangedSummarizedExperiment}},
-#'   \code{\link{SingleCellExperiment}}, \link{SpatialExperiment}}
+#'   \code{\link{SingleCellExperiment}}, \code{\link{SpatialExperiment}}
 #'
 #' @examples
 #' example(ExperimentList)
@@ -218,6 +218,11 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
     }
     if (is.numeric(exp))
       exp = .ixNumericToLogical(exp, nexp(x), paste0("<", class(x), ">[exp,] index out of bounds"))
+
+    #subset imgData for SpatialExperimentLists
+    if (is(x, 'SpatialExperimentList') & nrow(SpatialExperiment::imgData(x)) == nexp(x)) {
+      SpatialExperiment::imgData(x) = SpatialExperiment::imgData(x)[exp, , drop = FALSE]
+    }
 
     #identify columns to select
     j = j & x@experimentIndex %in% seq_len(nexp(x))[exp]
