@@ -1,4 +1,4 @@
-041310#' @name ExperimentList-methods
+#' @name ExperimentList-methods
 #'
 #' @title Methods for ExperimentList objects
 #'
