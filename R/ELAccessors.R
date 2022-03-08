@@ -220,7 +220,7 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
       exp = .ixNumericToLogical(exp, nexp(x), paste0("<", class(x), ">[exp,] index out of bounds"))
 
     #subset imgData for SpatialExperimentLists
-    if (is(x, 'SpatialExperimentList') & nrow(SpatialExperiment::imgData(x)) == nexp(x)) {
+    if (is(x, 'SpatialExperimentList') && nrow(SpatialExperiment::imgData(x)) == nexp(x)) {
       SpatialExperiment::imgData(x) = SpatialExperiment::imgData(x)[exp, , drop = FALSE]
     }
 
@@ -235,7 +235,7 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
   x@experimentIndex = x@experimentIndex[j]
 
   #update experimentIndex and experimentData if subsetting experiment
-  if (!missing(exp) && !any(exp)) {
+  if (!missing(exp) && !all(exp)) {
     #build index map from old to new indices
     ixmap = rep(NA_integer_, length(exp))
     ixmap[exp] = seq_len(sum(exp))
@@ -244,7 +244,7 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
     x@experimentIndex = ixmap[x@experimentIndex]
 
     #update experiment Data
-    experimentData(x) = experimentData(x)[exp, ]
+    experimentData(x) = experimentData(x)[exp, , drop = FALSE]
   }
 
   validObject(x)
