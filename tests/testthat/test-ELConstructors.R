@@ -51,9 +51,6 @@ test_that("Constructor works (RangedSummarizedExperiment)", {
   library(SingleCellExperiment)
   library(SpatialExperiment)
 
-  #empty object
-  expect_true(validObject(ExperimentList())) #exported
-
   #empty objects in the list
   se_empty1 = SummarizedExperiment(rowRanges = GRangesList())
   se_empty2 = SummarizedExperiment(rowRanges = GRangesList())
@@ -100,9 +97,6 @@ test_that("Constructor works (SingleCellExperiment)", {
   library(SingleCellExperiment)
   library(SpatialExperiment)
 
-  #empty object
-  expect_true(validObject(ExperimentList())) #exported
-
   #empty objects in the list
   sce_empty1 = SingleCellExperiment()
   sce_empty2 = SingleCellExperiment()
@@ -147,9 +141,6 @@ test_that("Constructor works (SpatialExperiment)", {
   library(SummarizedExperiment)
   library(SingleCellExperiment)
   library(SpatialExperiment)
-
-  #empty object
-  expect_true(validObject(ExperimentList())) #exported
 
   #empty objects in the list
   spe_empty1 = SpatialExperiment()

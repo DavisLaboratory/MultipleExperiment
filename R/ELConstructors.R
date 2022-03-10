@@ -82,7 +82,13 @@ ExperimentList <- function(experiments = SimpleList(),
                            change.names = TRUE) {
 
   if (length(experiments) == 0) {
-    return(.SummarizedExperimentList())
+    return(
+      .SummarizedExperimentList(
+        SummarizedExperiment::SummarizedExperiment(),
+        S4Vectors::DataFrame(),
+        numeric()
+      )
+    )
   }
 
   #check experiments
