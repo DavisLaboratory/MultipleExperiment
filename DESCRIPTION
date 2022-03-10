@@ -27,17 +27,19 @@ Depends:
     SingleCellExperiment,
     SpatialExperiment,
     SummarizedExperiment
+Imports: 
+    BiocGenerics,
+    methods
 Suggests: 
     rmarkdown,
     knitr,
     testthat (>= 3.0.0),
     BiocStyle,
     prettydoc,
-    ExperimentHub
+    GenomicRanges,
+    ExperimentHub,
+    TENxVisiumData
 Config/testthat/edition: 3
-Imports: 
-    BiocGenerics,
-    GenomicRanges
 VignetteBuilder: knitr
 URL: https://davislaboratory.github.io/ExperimentList
 BugReports: https://github.com/DavisLaboratory/ExperimentList/issues

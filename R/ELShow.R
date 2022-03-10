@@ -16,7 +16,14 @@
 }
 
 #' @export
+#' @rdname ExperimentList-methods
 setMethod("show", "SummarizedExperimentList", .showEL)
+#' @export
+#' @rdname ExperimentList-methods
 setMethod("show", "RangedSummarizedExperimentList", .showEL)
+#' @export
+#' @rdname ExperimentList-methods
 setMethod("show", "SingleCellExperimentList", .showEL)
+#' @export
+#' @rdname ExperimentList-methods
 setMethod("show", "SpatialExperimentList", .showEL)

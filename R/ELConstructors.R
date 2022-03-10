@@ -1,3 +1,5 @@
+#' @importFrom S4Vectors SimpleList DataFrame
+
 #' @name ExperimentList
 #'
 #' @title ExperimentList objects
