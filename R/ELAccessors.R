@@ -273,7 +273,7 @@ setMethod("subset", "ExperimentList", function(x, subset, select, ..., experimen
 #' @export
 setMethod("experiments", "ExperimentList", function(x, change.names = TRUE) {
   #revert names
-  if (change.names && !is.null(experimentNames(x))) {
+  if (change.names && !is.null(experimentNames(x)) && !is.null(colnames(x))) {
     regex = gsub('\\.', '\\\\\\.', paste(experimentNames(x), collapse = '|'))
     regex = sprintf('(%s)\\.', regex)
     colnames(x) = gsub(regex, '', colnames(x))
