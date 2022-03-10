@@ -30,7 +30,10 @@ Depends:
 Suggests: 
     rmarkdown,
     knitr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    BiocStyle,
+    prettydoc,
+    ExperimentHub
 Config/testthat/edition: 3
 Imports: 
     BiocGenerics,
