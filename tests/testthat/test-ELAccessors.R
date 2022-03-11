@@ -30,17 +30,17 @@ test_that("ExperimentList-specific accessors work", {
   experimentNames(spe_list) = LETTERS[1:2]
   expect_warning((experimentData(spe_list) = expdf), 'NULL')
 
-  #colWithExperimentData
+  #colData
   mat = matrix(1, 3, 3, dimnames = list(paste0('r', 1:3), paste0('c', 1:3)))
   spe = SpatialExperiment(assays = list(mat))
   expdf = matrix(1, 2, 1, dimnames = list(LETTERS[1:2], c('Col1')))
   spe_list = ExperimentList(list('A' = spe, 'B' = spe), expdf)
-  expect_equal(ncol(colWithExperimentData(spe_list)), 2)
+  expect_equal(ncol(colData(spe_list, experimentData = TRUE)), 2)
 
   mat = matrix(1, 3, 3)
   spe = SpatialExperiment(assays = list(mat))
   spe_list = ExperimentList(list(spe,spe))
-  expect_equal(ncol(colWithExperimentData(spe_list)), 1)
+  expect_equal(ncol(colData(spe_list, experimentData = TRUE)), 1)
 
   #experiments
   mat = matrix(1, 3, 3, dimnames = list(paste0('row', 1:3), paste0('col', 1:3)))
@@ -91,6 +91,7 @@ test_that("Subset functions work", {
   expect_equal(dim(spe_list[, (1:3), exp = 2]), c(3, 0))
   expect_equal(spe_list[, c(FALSE, TRUE, TRUE), exp = -2]@experimentIndex, rep(1, each = 2))
   expect_equal(nrow(experimentData(spe_list[, , exp = 1])), 1)
+  expect_s4_class(spe_list[,, exp = c(FALSE, FALSE)], 'ExperimentList')
 
   #with names
   mat = matrix(1, 3, 3, dimnames = list(paste0('r', 1:3), paste0('c', 1:3)))
@@ -119,6 +120,7 @@ test_that("Subset functions work", {
   expect_equal(spe_list[, c(FALSE, TRUE, TRUE), exp = 'A']@experimentIndex, rep(1, each = 2))
   expect_equal(dim(spe_list[, (1:3), exp = c(FALSE, TRUE)]), c(3, 0))
   expect_equal(nrow(experimentData(spe_list[, , exp = 'A'])), 1)
+  expect_s4_class(spe_list[,, exp = c(FALSE, FALSE)], 'ExperimentList')
 
   #SummarizedExperiment
   mat = matrix(1, 3, 3)

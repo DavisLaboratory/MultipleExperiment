@@ -31,12 +31,6 @@ setReplaceMethod("experimentData", "ExperimentList", function(x, value) {
 
 #' @rdname ExperimentList-methods
 #' @export
-setMethod("colWithExperimentData", "ExperimentList", function(x) {
-  return(cbind(colData(x), experimentData(x)[x@experimentIndex, , drop = FALSE]))
-})
-
-#' @rdname ExperimentList-methods
-#' @export
 setMethod("nexp", "ExperimentList", function(x) {
   return(nrow(experimentData(x)))
 })
@@ -54,6 +48,21 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
   validObject(x)
   return(x)
 })
+
+#colData
+.colData_EL <- function(x, ..., experimentData = FALSE) {
+  cdata = callNextMethod(x, ...)
+  if (experimentData) {
+    cdata = cbind(cdata, experimentData(x)[x@experimentIndex, , drop = FALSE])
+  }
+
+  return(cdata)
+}
+
+setMethod("colData", "SummarizedExperimentList", .colData_EL)
+setMethod("colData", "RangedSummarizedExperimentList", .colData_EL)
+setMethod("colData", "SingleCellExperimentList", .colData_EL)
+setMethod("colData", "SpatialExperimentList", .colData_EL)
 
 #----Subsetting----
 #' Transform character indices to numeric indices
@@ -170,13 +179,12 @@ setMethod("[", c("SingleCellExperimentList", "ANY", "ANY"), .indexSubsetEL)
 #' @rdname ExperimentList-methods
 setMethod("[", c("SpatialExperimentList", "ANY", "ANY"), .indexSubsetEL)
 
-#' @rdname ExperimentList-methods
-setMethod("subset", "ExperimentList", function(x, subset, select, ..., experiment) {
-  i = S4Vectors:::evalqForSubset(subset, SummarizedExperiment::rowData(x, use.names = FALSE), ...)
-  j = S4Vectors:::evalqForSubset(select, SummarizedExperiment::colData(x), ...)
-  exp = S4Vectors:::evalqForSubset(experiment, experimentData(x), ...)
-  return(x[i, j, exp = exp])
-})
+# setMethod("subset", "ExperimentList", function(x, subset, select, ..., experiment) {
+#   i = S4Vectors:::evalqForSubset(subset, SummarizedExperiment::rowData(x, use.names = FALSE), ...)
+#   j = S4Vectors:::evalqForSubset(select, SummarizedExperiment::colData(x), ...)
+#   exp = S4Vectors:::evalqForSubset(experiment, experimentData(x), ...)
+#   return(x[i, j, exp = exp])
+# })
 
 #----experiments----
 #' @rdname ExperimentList-methods
