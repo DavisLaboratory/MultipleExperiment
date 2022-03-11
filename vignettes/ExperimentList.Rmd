@@ -129,7 +129,7 @@ el[1:5, , exp = 2]
 
 The functions below can be used to access and set data in the object.
 
--   `nexp()`, `experimentNames()`
+- `nexp()`, `experimentNames()`
 
 ```{r}
 #number of experiments
@@ -138,14 +138,14 @@ nexp(el)
 experimentNames(el)
 ```
 
--   `experiments()`
+- `experiments()`
 
 ```{r}
 #get a list of individual experiments
 experiments(el)
 ```
 
--   `experimentData()`, `colData()`, `colWithExperimentData()`
+- `experimentData()`, `colData()`
 
 ```{r}
 #get experiment annotations
@@ -153,34 +153,30 @@ experimentData(el)
 #get column annotations
 head(colData(el))
 #get column annotations merged with experiment annotations
-head(colWithExperimentData(el))
+head(colData(el, experimentData = TRUE))
 ```
 
 ## Apply
 
-The `elapply()` function can be used to apply functions to individual objects. Results can be simplified depending on their types (see the *simplify* parameter in `lapply()`).
+The `elapply()` function can be used to apply functions to individual objects.
 
 ```{r}
-#apply function and simplify results
+#apply function
 elapply(el, dim)
-#apply function and DO NOT simplify results
-elapply(el, dim, simplify = FALSE)
 ```
 
-If the return type is the same as the type of the individual experiment objects, *simplify* will combine them and return an `ExperimentList` object.
+If the return type is the same as the type of the individual experiment objects, they will be combined into `ExperimentList` object.
 
 ```{r}
-#get the first 100 spots and simplify results
+#get the first 100 spots
 elapply(el, function(x) x[, 1:100])
-#get the first 100 spots and DO NOT simplify results
-elapply(el, function(x) x[, 1:100], simplify = FALSE)
 ```
 
 This function allows the `ExperimentList` object to be treated as a list. Since the parent class of the object is `SpatialExperiment`, all functions that work for it automatically work for the `ExperimentList` object.
 
 ```{r}
 #extract image data for each object separately
-elapply(el, imgData, simplify = FALSE)
+elapply(el, imgData)
 #extract image data collectively
 imgData(el)
 ```
