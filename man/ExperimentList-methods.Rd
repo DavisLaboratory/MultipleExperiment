@@ -9,12 +9,15 @@
 \alias{experimentData<-}
 \alias{elapply}
 \alias{show}
+\alias{colData}
+\alias{coerce,ExperimentList,SummarizedExperimentList-method}
+\alias{coerce,ExperimentList,RangedSummarizedExperimentList-method}
+\alias{coerce,ExperimentList,SingleCellExperimentList-method}
+\alias{coerce,ExperimentList,SpatialExperimentList-method}
 \alias{experimentNames}
 \alias{experimentNames<-}
-\alias{colWithExperimentData}
 \alias{experimentData,ExperimentList-method}
 \alias{experimentData<-,ExperimentList-method}
-\alias{colWithExperimentData,ExperimentList-method}
 \alias{nexp,ExperimentList-method}
 \alias{experimentNames,ExperimentList-method}
 \alias{experimentNames<-,ExperimentList-method}
@@ -22,7 +25,6 @@
 \alias{[,RangedSummarizedExperimentList,ANY,ANY,ANY-method}
 \alias{[,SingleCellExperimentList,ANY,ANY,ANY-method}
 \alias{[,SpatialExperimentList,ANY,ANY,ANY-method}
-\alias{subset,ExperimentList-method}
 \alias{experiments,ExperimentList-method}
 \alias{elapply,ExperimentList-method}
 \alias{show,SummarizedExperimentList-method}
@@ -43,15 +45,11 @@ experimentData(x, ...)
 
 experimentData(x, ...) <- value
 
-colWithExperimentData(x, ...)
-
 elapply(x, ...)
 
 \S4method{experimentData}{ExperimentList}(x)
 
 \S4method{experimentData}{ExperimentList}(x) <- value
-
-\S4method{colWithExperimentData}{ExperimentList}(x)
 
 \S4method{nexp}{ExperimentList}(x)
 
@@ -67,11 +65,9 @@ elapply(x, ...)
 
 \S4method{[}{SpatialExperimentList,ANY,ANY,ANY}(x, i, j, ..., exp, drop = TRUE)
 
-\S4method{subset}{ExperimentList}(x, subset, select, ..., experiment)
-
 \S4method{experiments}{ExperimentList}(x, change.names = TRUE)
 
-\S4method{elapply}{ExperimentList}(x, FUN, ..., simplify = TRUE, check.names = TRUE, change.names = TRUE)
+\S4method{elapply}{ExperimentList}(x, FUN, ..., check.names = TRUE, change.names = TRUE)
 
 \S4method{show}{SummarizedExperimentList}(object)
 
@@ -99,30 +95,12 @@ elapply(x, ...)
 
 \item{drop}{A \code{logical(1)}, ignored by these methods.}
 
-\item{subset}{An expression which, when evaluated in the context of
-\code{rowRanges(x)}, is a logical vector indicating elements or rows to keep:
-missing values are taken as false.}
-
-\item{select}{An expression which, when evaluated in the context of
-\code{colData(x)}, is a logical vector indicating elements or rows to keep:
-missing values are taken as false.}
-
-\item{experiment}{A subscript that can act to subset experiments from
-\code{x}.}
-
 \item{change.names}{a logical indicating whether column names of columns in
 each individual experiment object should be concatenated with experiment
 names to ensure unique column names (default is TRUE).}
 
 \item{FUN}{The function to be applied to each element of \code{x}: see
 ‘Details’.}
-
-\item{simplify}{A \code{logical(1)} or \code{character(1)} string; should the
-result be simplified to a ExperimentList, vector, matrix or higher
-dimensional array if possible? The default value, TRUE, returns an
-\code{ExperimentList} if possible, or a vector or matrix if appropriate,
-whereas if simplify = "array" the result may be an array of “rank”
-(\verb{=length(dim(.))}) one higher than the result of \code{FUN(X[[i]])}.}
 
 \item{check.names}{a logical specifying whether names of \code{experiments}
 should be checked against row names of \code{experimentData} (default is
@@ -188,12 +166,11 @@ example(ExperimentList)
 
 nexp(el)
 experimentData(el)
-colWithExperimentData(el)
+colData(el, experimentData = TRUE)
 experimentNames(el)
 el[1:5, 1:5]
 el[, exp = 'PatientA']
 elapply(el, dim)
-elapply(el, dim, simplify = FALSE)
 
 }
 \seealso{

@@ -2,7 +2,11 @@
 #'
 #' @title Methods for ExperimentList objects
 #'
-#' @aliases experiments nexp experimentData experimentData<- elapply show
+#' @aliases experiments nexp experimentData experimentData<- elapply show colData
+#' @aliases coerce,ExperimentList,SummarizedExperimentList-method
+#' @aliases coerce,ExperimentList,RangedSummarizedExperimentList-method
+#' @aliases coerce,ExperimentList,SingleCellExperimentList-method
+#' @aliases coerce,ExperimentList,SpatialExperimentList-method
 #'
 #' @description The \code{\link{ExperimentList}} class provides a family of
 #'   methods to manage and process data from multiple experiments.
@@ -19,23 +23,9 @@
 #' @param i A subscript that can act to subset the rows of \code{x}.
 #' @param j A subscript that can act to subset the columns of \code{x}.
 #' @param exp A subscript that can act to subset experiments from \code{x}.
-#' @param experiment A subscript that can act to subset experiments from
-#'   \code{x}.
-#' @param subset An expression which, when evaluated in the context of
-#'   `rowRanges(x)`, is a logical vector indicating elements or rows to keep:
-#'   missing values are taken as false.
-#' @param select An expression which, when evaluated in the context of
-#'   `colData(x)`, is a logical vector indicating elements or rows to keep:
-#'   missing values are taken as false.
 #' @param drop A \code{logical(1)}, ignored by these methods.
 #' @param FUN The function to be applied to each element of \code{x}: see
 #'   ‘Details’.
-#' @param simplify A \code{logical(1)} or \code{character(1)} string; should the
-#'   result be simplified to a ExperimentList, vector, matrix or higher
-#'   dimensional array if possible? The default value, TRUE, returns an
-#'   \code{ExperimentList} if possible, or a vector or matrix if appropriate,
-#'   whereas if simplify = "array" the result may be an array of “rank”
-#'   (`=length(dim(.))`) one higher than the result of `FUN(X[[i]])`.
 #' @param ... Further arguments to be passed to or from other methods.
 #' @inheritParams ExperimentList
 #'
@@ -84,12 +74,11 @@
 #'
 #' nexp(el)
 #' experimentData(el)
-#' colWithExperimentData(el)
+#' colData(el, experimentData = TRUE)
 #' experimentNames(el)
 #' el[1:5, 1:5]
 #' el[, exp = 'PatientA']
 #' elapply(el, dim)
-#' elapply(el, dim, simplify = FALSE)
 #'
 NULL
 
@@ -116,10 +105,6 @@ setGeneric("experimentData", function(x, ...) standardGeneric("experimentData"))
 #' @rdname ExperimentList-methods
 #' @export
 setGeneric("experimentData<-", function(x, ..., value) standardGeneric("experimentData<-"))
-
-#' @rdname ExperimentList-methods
-#' @export
-setGeneric("colWithExperimentData", function(x, ...) standardGeneric("colWithExperimentData"))
 
 #' @rdname ExperimentList-methods
 #' @export
