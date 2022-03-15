@@ -32,7 +32,10 @@ setReplaceMethod("experimentData", "ExperimentList", function(x, value) {
 #' @rdname ExperimentList-methods
 #' @export
 setMethod("nexp", "ExperimentList", function(x) {
-  return(nrow(experimentData(x)))
+  n = nrow(experimentData(x))
+  if (n == numeric(0))
+    n = 0
+  return(n)
 })
 
 #' @rdname ExperimentList-methods
