@@ -1,9 +1,9 @@
-test_that("ExperimentList-specific accessors work", {
+test_that("MultipleExperiment-specific accessors work", {
   library(SpatialExperiment)
 
   mat = matrix(1, 3, 3)
   spe = SpatialExperiment(assays = list(mat))
-  spe_list = ExperimentList(list(spe,spe))
+  spe_list = MultipleExperiment(list(spe,spe))
 
   #no names (colnames or experiment)
   expect_equal(dim(spe_list), c(3, 6))
@@ -34,19 +34,19 @@ test_that("ExperimentList-specific accessors work", {
   mat = matrix(1, 3, 3, dimnames = list(paste0('r', 1:3), paste0('c', 1:3)))
   spe = SpatialExperiment(assays = list(mat))
   expdf = matrix(1, 2, 1, dimnames = list(LETTERS[1:2], c('Col1')))
-  spe_list = ExperimentList(list('A' = spe, 'B' = spe), expdf)
+  spe_list = MultipleExperiment(list('A' = spe, 'B' = spe), expdf)
   expect_equal(ncol(colData(spe_list, experimentData = TRUE)), 2)
 
   mat = matrix(1, 3, 3)
   spe = SpatialExperiment(assays = list(mat))
-  spe_list = ExperimentList(list(spe,spe))
+  spe_list = MultipleExperiment(list(spe,spe))
   expect_equal(ncol(colData(spe_list, experimentData = TRUE)), 1)
 
   #experiments
   mat = matrix(1, 3, 3, dimnames = list(paste0('row', 1:3), paste0('col', 1:3)))
   spe = SpatialExperiment(assays = list(mat))
   expdf = matrix(1, 2, 1, dimnames = list(LETTERS[1:2], c('Col1')))
-  spe_list = ExperimentList(list('A' = spe, 'B' = spe), expdf)
+  spe_list = MultipleExperiment(list('A' = spe, 'B' = spe), expdf)
   expect_equal(length(experiments(spe_list)), 2)
   expect_equal(names(experiments(spe_list)), LETTERS[1:2])
   expect_equal(colnames(experiments(spe_list)[[1]]), paste0('col', 1:3))
@@ -54,7 +54,7 @@ test_that("ExperimentList-specific accessors work", {
 
   mat = matrix(1, 3, 3)
   spe = SpatialExperiment(assays = list(mat))
-  spe_list = ExperimentList(list(spe,spe))
+  spe_list = MultipleExperiment(list(spe,spe))
   expect_equal(length(experiments(spe_list)), 2)
   expect_null(names(experiments(spe_list)))
   expect_null(colnames(experiments(spe_list)[[1]]))
@@ -69,7 +69,7 @@ test_that("Subset functions work", {
   #no names
   mat = matrix(1, 3, 3)
   spe = SpatialExperiment(assays = list(mat))
-  spe_list = ExperimentList(list(spe, spe))
+  spe_list = MultipleExperiment(list(spe, spe))
 
   #subset rows
   expect_equal(nrow(spe_list[1:2, ]), 2)
@@ -91,13 +91,13 @@ test_that("Subset functions work", {
   expect_equal(dim(spe_list[, (1:3), exp = 2]), c(3, 0))
   expect_equal(spe_list[, c(FALSE, TRUE, TRUE), exp = -2]@experimentIndex, rep(1, each = 2))
   expect_equal(nrow(experimentData(spe_list[, , exp = 1])), 1)
-  expect_s4_class(spe_list[,, exp = c(FALSE, FALSE)], 'ExperimentList')
+  expect_s4_class(spe_list[,, exp = c(FALSE, FALSE)], 'MultipleExperiment')
 
   #with names
   mat = matrix(1, 3, 3, dimnames = list(paste0('r', 1:3), paste0('c', 1:3)))
   spe = SpatialExperiment(assays = list(mat))
   expdf = matrix(1, 2, 1, dimnames = list(LETTERS[1:2], c('Col1')))
-  spe_list = ExperimentList(list('A' = spe, 'B' = spe), expdf)
+  spe_list = MultipleExperiment(list('A' = spe, 'B' = spe), expdf)
 
   #subset rows
   expect_equal(nrow(spe_list[1:2, ]), 2)
@@ -120,12 +120,12 @@ test_that("Subset functions work", {
   expect_equal(spe_list[, c(FALSE, TRUE, TRUE), exp = 'A']@experimentIndex, rep(1, each = 2))
   expect_equal(dim(spe_list[, (1:3), exp = c(FALSE, TRUE)]), c(3, 0))
   expect_equal(nrow(experimentData(spe_list[, , exp = 'A'])), 1)
-  expect_s4_class(spe_list[,, exp = c(FALSE, FALSE)], 'ExperimentList')
+  expect_s4_class(spe_list[,, exp = c(FALSE, FALSE)], 'MultipleExperiment')
 
   #SummarizedExperiment
   mat = matrix(1, 3, 3)
   se = SummarizedExperiment(assays = list(mat))
-  se_list = ExperimentList(list(se, se))
+  se_list = MultipleExperiment(list(se, se))
   #subset rows
   expect_equal(nrow(se_list[1:2, ]), 2)
   expect_error(rownames(se_list[c(3:4), ]))
@@ -140,7 +140,7 @@ test_that("Subset functions work", {
   #RangedSummarizedExperiment
   mat = matrix(1, 3, 3)
   se = SummarizedExperiment(assays = list(mat), rowRanges = GRanges("chr2", IRanges(3:5, 6:8)))
-  se_list = ExperimentList(list(se, se))
+  se_list = MultipleExperiment(list(se, se))
   #subset rows
   expect_equal(nrow(se_list[1:2, ]), 2)
   expect_error(rownames(se_list[c(3:4), ]))
@@ -155,7 +155,7 @@ test_that("Subset functions work", {
   #SingleCellExperiment
   mat = matrix(1, 3, 3)
   sce = SingleCellExperiment(assays = list(mat))
-  sce_list = ExperimentList(list(sce, sce))
+  sce_list = MultipleExperiment(list(sce, sce))
   #subset rows
   expect_equal(nrow(sce_list[1:2, ]), 2)
   expect_equal(dim(sce_list[1:2, 1:2]), c(2, 2))
@@ -180,7 +180,7 @@ test_that("Subset functions work on imgData", {
 
   #subset imgData works for SPEList
   imgData(spe) = imgData(spe)[1, ]
-  el = ExperimentList(list(spe, spe))
+  el = MultipleExperiment(list(spe, spe))
 
   expect_equal(nrow(imgData(el)), 2)
   expect_equal(nrow(imgData(el[,, exp = 1])), 1)

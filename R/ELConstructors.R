@@ -1,22 +1,22 @@
 #' @importFrom S4Vectors SimpleList DataFrame
 
-#' @name ExperimentList
+#' @name MultipleExperiment
 #'
-#' @title ExperimentList objects
+#' @title MultipleExperiment objects
 #'
-#' @aliases ExperimentList ExperimentList-class SummarizedExperimentList
-#'   SummarizedExperimentList-class RangedSummarizedExperimentList
-#'   RangedSummarizedExperimentList-class SingleCellExperimentList
-#'   SingleCellExperimentList-class SpatialExperimentList
-#'   SpatialExperimentList-class
+#' @aliases MultipleExperiment MultipleExperiment-class SummarizedMultipleExperiment
+#'   SummarizedMultipleExperiment-class RangedSummarizedMultipleExperiment
+#'   RangedSummarizedMultipleExperiment-class SingleCellMultipleExperiment
+#'   SingleCellMultipleExperiment-class SpatialMultipleExperiment
+#'   SpatialMultipleExperiment-class
 #'
-#' @description Classes in \code{ExperimentList} are designed to store lists of
+#' @description Classes in \code{MultipleExperiment} are designed to store lists of
 #'   experiments such as \code{SummarizedExperiment},
 #'   \code{RangedSummarizedExperiment}, \code{SingleCellExperiment},
 #'   \code{SpatialExperiment}. Each experiment object is stored in its own
-#'   ExperimentList class respectively (one of \code{SummarizedExperimentList},
-#'   \code{RangedSummarizedExperimentList}, \code{SingleCellExperimentList},
-#'   \code{SpatialExperimentList}). In addition to storing experiment data, the
+#'   MultipleExperiment class respectively (one of \code{SummarizedMultipleExperiment},
+#'   \code{RangedSummarizedMultipleExperiment}, \code{SingleCellMultipleExperiment},
+#'   \code{SpatialMultipleExperiment}). In addition to storing experiment data, the
 #'   class also stores experiment-specific annotations associated with each
 #'   experiment, analogous to \code{colData} in a SummarizedExperiment object.
 #'
@@ -38,15 +38,15 @@
 #'   from different studies. For single-cell or spatial transcriptomics data,
 #'   these could be data from different samples but from the same study. In
 #'   these scenarios, analysis of data from different biological samples is made
-#'   possible by \code{ExperimentList} objects.
+#'   possible by \code{MultipleExperiment} objects.
 #'
-#'   Similar to the design of \code{SummarizedExperiment}, \code{ExperimentList}
+#'   Similar to the design of \code{SummarizedExperiment}, \code{MultipleExperiment}
 #'   enables storing and subsetting of experiment-specific annotations as part
 #'   of the \code{experimentData} stored within each object.
 #'
-#' @return One of the following objects: \code{SummarizedExperimentList},
-#'   \code{RangedSummarizedExperimentList}, \code{SingleCellExperimentList}, or
-#'   \code{SpatialExperimentList}.
+#' @return One of the following objects: \code{SummarizedMultipleExperiment},
+#'   \code{RangedSummarizedMultipleExperiment}, \code{SingleCellMultipleExperiment}, or
+#'   \code{SpatialMultipleExperiment}.
 #'
 #' @export
 #' @examples
@@ -71,18 +71,18 @@
 #'                             sex = c("F", "M"),
 #'                             row.names = c("PatientA", "PatientB"))
 #'
-#' #Create ExperimentList
+#' #Create MultipleExperiment
 #' experiments = SimpleList("PatientA" = se1, "PatientB" = se2)
-#' el = ExperimentList(experiments = experiments,
+#' el = MultipleExperiment(experiments = experiments,
 #'                     experimentData = experimentData)
 #' el
-ExperimentList <- function(experiments = SimpleList(),
+MultipleExperiment <- function(experiments = SimpleList(),
                            experimentData = DataFrame(),
                            check.names = TRUE,
                            change.names = TRUE) {
 
   if (length(experiments) == 0) {
-    return(.SummarizedExperimentList())
+    return(.SummarizedMultipleExperiment())
   }
 
   #check experiments
@@ -94,10 +94,10 @@ ExperimentList <- function(experiments = SimpleList(),
   #identify constructor
   constructorFun = switch(
     struct,
-    SummarizedExperiment = .SummarizedExperimentList,
-    RangedSummarizedExperiment = .RangedSummarizedExperimentList,
-    SingleCellExperiment = .SingleCellExperimentList,
-    SpatialExperiment = .SpatialExperimentList
+    SummarizedExperiment = .SummarizedMultipleExperiment,
+    RangedSummarizedExperiment = .RangedSummarizedMultipleExperiment,
+    SingleCellExperiment = .SingleCellMultipleExperiment,
+    SpatialExperiment = .SpatialMultipleExperiment
   )
 
   #coerce matrix and data.frame
@@ -160,7 +160,7 @@ ExperimentList <- function(experiments = SimpleList(),
   return(selist)
 }
 
-setValidity2('SummarizedExperimentList', function(object) {
+setValidity2('SummarizedMultipleExperiment', function(object) {
   NR = NROW(object)
   NC = NCOL(object)
   NE = NROW(experimentData(object))

@@ -1,6 +1,6 @@
-#' @rdname ExperimentList-methods
+#' @rdname MultipleExperiment-methods
 #' @export
-setMethod("elapply", "ExperimentList", function(x, FUN, ..., check.names = TRUE, change.names = TRUE) {
+setMethod("elapply", "MultipleExperiment", function(x, FUN, ..., check.names = TRUE, change.names = TRUE) {
   FUN = match.fun(FUN)
 
   if (nexp(x) == 0)
@@ -13,7 +13,7 @@ setMethod("elapply", "ExperimentList", function(x, FUN, ..., check.names = TRUE,
   #simplify
   if (all(sapply(results, is, is(x)[2]))) {
     results = do.call(
-      ExperimentList,
+      MultipleExperiment,
       args = list(
         experiments = results,
         experimentData = experimentData,

@@ -1,5 +1,5 @@
 ---
-title: "ExperimentList: S4 Class for handling lists of Experiments"
+title: "MultipleExperiment: S4 Class for handling lists of Experiments"
 author: "Dharmesh D. Bhuva"
 date: "`r BiocStyle::doc_date()`"
 output:
@@ -11,7 +11,7 @@ output:
     fig_caption: yes
     df_print: paged
 abstract: > 
-  The ExperimentList package defines S4 classes to handle data from 
+  The MultipleExperiment package defines S4 classes to handle data from 
   multiple experiments or studies by providing features of lists as well as those
   of a concatenated experiment. Individual experiments can be in the form of 
   SummarizedExperiment, Ranged SummarizedExperiment, SingleCellExperiment, or 
@@ -22,7 +22,7 @@ abstract: >
   experiment (e.g., `SingleCellExperiment::reducedDim()`) can be readily applied
   across the entire list of experiments.
 vignette: >
-  %\VignetteIndexEntry{ExperimentList}
+  %\VignetteIndexEntry{MultipleExperiment}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -40,38 +40,38 @@ knitr::opts_chunk$set(
 
 The advent of high throughput molecular measurement technologies has resulted in the generation of vast amounts of data. The `SummarizedExperiment` object and its derivates have assisted in hosting data from these technologies. The `SingleCellExperiment` and `SpatialExperiment` objects are able to store even higher resolution single-cell and spatial transcriptomics measurements from a single biological sample respectively. Reduced costs has enabled the generation of these data from multiple biological samples. Such data is not easily stored and manupilated within a single object. Concatenation of objects can partially resolve this data since it can be analysed in unison, however, prevents for sample-wise analysis. Maintaining a list of objects would allow object-wise analysis, but would hinder collective analysis.
 
-The `ExperimentList` object is designed to fill in this gap and allows storage and manipulation of multiple `SpatialExperiment`, `SingleCellExperiment`, `RangedSummarizedExperiment` or `SummarizedExperiment` objects. It provides both list-like and object-like functionality thus providing dynamic access to the data as the needs arise. For example, when analysing multiple spatial transcriptomic datasets, users may wish to compute reduced dimensions (e.g., PCA) on each individual object before dataset integration and compute a combined reduced dimension after. In such scenarios, having a hybrid interface to the data is beneficial.
+The `MultipleExperiment` object is designed to fill in this gap and allows storage and manipulation of multiple `SpatialExperiment`, `SingleCellExperiment`, `RangedSummarizedExperiment` or `SummarizedExperiment` objects. It provides both list-like and object-like functionality thus providing dynamic access to the data as the needs arise. For example, when analysing multiple spatial transcriptomic datasets, users may wish to compute reduced dimensions (e.g., PCA) on each individual object before dataset integration and compute a combined reduced dimension after. In such scenarios, having a hybrid interface to the data is beneficial.
 
 ```{r eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("ExperimentList")
+BiocManager::install("MultipleExperiment")
 ```
 
-# Anatomy of an `ExperimentList`
+# Anatomy of an `MultipleExperiment`
 
-The `ExperimentList` object borrows its structure from the object it hosts. When dealing with a list of `SpatialExperiment` objects, all slots from the object are made available therefore the rows contain feature (e.g., gene/transcript) information, the columns represent individual observations (e.g., visium spots), and multiple assays can be stored. The individual objects (different shades in the schematic) are concatenated to create a single `SpatialExperiment` object. The mapping between the original sample and the concatenated columns are maintained using and internal slot (`experimentIndex`). Sample-specific annotation (NOT spot-specific) are held in a `DataFrame` and are linked to the columns of the new `ExperimentList` object.
+The `MultipleExperiment` object borrows its structure from the object it hosts. When dealing with a list of `SpatialExperiment` objects, all slots from the object are made available therefore the rows contain feature (e.g., gene/transcript) information, the columns represent individual observations (e.g., visium spots), and multiple assays can be stored. The individual objects (different shades in the schematic) are concatenated to create a single `SpatialExperiment` object. The mapping between the original sample and the concatenated columns are maintained using and internal slot (`experimentIndex`). Sample-specific annotation (NOT spot-specific) are held in a `DataFrame` and are linked to the columns of the new `MultipleExperiment` object.
 
-The following schematic demonstrates the structure of the ExperimentList object and lists some common accessors to interact with the object.
+The following schematic demonstrates the structure of the MultipleExperiment object and lists some common accessors to interact with the object.
 
-![ExperimentList anatomy](EL.jpg)
+![MultipleExperiment anatomy](EL.jpg)
 
 Under the hood, a separate class is used to hold the list of objects as described in the table below.
 
-| Object class                 | Matched `ExperimentList` class   |
+| Object class                 | Matched `MultipleExperiment` class   |
 |------------------------------|----------------------------------|
-| `SummarizedExperiment`       | `SummarizedExperimentList`       |
-| `RangedSummarizedExperiment` | `RangedSummarizedExperimentList` |
-| `SingleCellExperiment`       | `SingleCellExperimentList`       |
-| `SpatialExperiment`          | `SpatialExperimentList`          |
+| `SummarizedExperiment`       | `SummarizedMultipleExperiment`       |
+| `RangedSummarizedExperiment` | `RangedSummarizedMultipleExperiment` |
+| `SingleCellExperiment`       | `SingleCellMultipleExperiment`       |
+| `SpatialExperiment`          | `SpatialMultipleExperiment`          |
 
-# Constructing an `ExperimentList`
+# Constructing an `MultipleExperiment`
 
-The `TENxVisiumData` package contains 10X Visium data from various human and mouse tissues. We will use the breast cancer IDC and ILC datasets from this package to demonstrate the ExperimentList container. These data contain measurements of 36601 transcripts measured across 7785 and 4325 spots respectively.
+The `TENxVisiumData` package contains 10X Visium data from various human and mouse tissues. We will use the breast cancer IDC and ILC datasets from this package to demonstrate the MultipleExperiment container. These data contain measurements of 36601 transcripts measured across 7785 and 4325 spots respectively.
 
 ```{r}
-library(ExperimentList)
+library(MultipleExperiment)
 library(TENxVisiumData)
 
 #download data
@@ -89,7 +89,7 @@ spe_list = list(
 spe_list
 ```
 
-Given the individual objects, we first create a sample-specific annotation table and subsequently use it to create an `ExperimentList` object. With the data prepared, the object can be constructed using the `ExperimentList()` function.
+Given the individual objects, we first create a sample-specific annotation table and subsequently use it to create an `MultipleExperiment` object. With the data prepared, the object can be constructed using the `MultipleExperiment()` function.
 
 ```{r}
 #create some artificial experiment annotations
@@ -100,14 +100,14 @@ experimentAnnotation = data.frame(
 )
 experimentAnnotation
 
-#create ExperimentList objects
-el = ExperimentList(experiments = spe_list, experimentData = experimentAnnotation)
+#create MultipleExperiment objects
+el = MultipleExperiment(experiments = spe_list, experimentData = experimentAnnotation)
 el
 ```
 
-The `ExperimentList` object can be created without *experimentData* and with an unnamed list. When using a named list, names of the list should be matched with rownames of *experimentData*.
+The `MultipleExperiment` object can be created without *experimentData* and with an unnamed list. When using a named list, names of the list should be matched with rownames of *experimentData*.
 
-# Common operations on `ExperimentList`
+# Common operations on `MultipleExperiment`
 
 ## Subsetting
 
@@ -165,14 +165,14 @@ The `elapply()` function can be used to apply functions to individual objects.
 elapply(el, dim)
 ```
 
-If the return type is the same as the type of the individual experiment objects, they will be combined into `ExperimentList` object.
+If the return type is the same as the type of the individual experiment objects, they will be combined into `MultipleExperiment` object.
 
 ```{r}
 #get the first 100 spots
 elapply(el, function(x) x[, 1:100])
 ```
 
-This function allows the `ExperimentList` object to be treated as a list. Since the parent class of the object is `SpatialExperiment`, all functions that work for it automatically work for the `ExperimentList` object.
+This function allows the `MultipleExperiment` object to be treated as a list. Since the parent class of the object is `SpatialExperiment`, all functions that work for it automatically work for the `MultipleExperiment` object.
 
 ```{r}
 #extract image data for each object separately
@@ -183,15 +183,15 @@ imgData(el)
 
 ## Coercion
 
-`ExperimentList` objects can be coerced to their parental classes or `ExperimentList` versions of their parental classes.
+`MultipleExperiment` objects can be coerced to their parental classes or `MultipleExperiment` versions of their parental classes.
 
 ```{r}
 #convert to SpatialExperiment
 as(el, 'SpatialExperiment')
 #convert to SummarizedExperiment
 as(el, 'SummarizedExperiment')
-#convert to SummarizedExperimentList
-as(el, 'SummarizedExperimentList')
+#convert to SummarizedMultipleExperiment
+as(el, 'SummarizedMultipleExperiment')
 ```
 
 The full coercion hierarchy can be explored using the `is()` function.

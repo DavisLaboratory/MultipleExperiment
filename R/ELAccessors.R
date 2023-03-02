@@ -1,13 +1,13 @@
 #----EL-specific----
-#' @rdname ExperimentList-methods
+#' @rdname MultipleExperiment-methods
 #' @export
-setMethod("experimentData", "ExperimentList", function(x) {
+setMethod("experimentData", "MultipleExperiment", function(x) {
   return(x@experimentData)
 })
 
-#' @rdname ExperimentList-methods
+#' @rdname MultipleExperiment-methods
 #' @export
-setReplaceMethod("experimentData", "ExperimentList", function(x, value) {
+setReplaceMethod("experimentData", "MultipleExperiment", function(x, value) {
   #if null, replace with empty data frame
   if (is.null(value)) {
     value = S4Vectors::DataFrame(matrix(nrow = nrow(x@experimentData), ncol = 0))
@@ -29,24 +29,24 @@ setReplaceMethod("experimentData", "ExperimentList", function(x, value) {
   return(x)
 })
 
-#' @rdname ExperimentList-methods
+#' @rdname MultipleExperiment-methods
 #' @export
-setMethod("nexp", "ExperimentList", function(x) {
+setMethod("nexp", "MultipleExperiment", function(x) {
   n = nrow(experimentData(x))
   if (length(n) == 0)
     n = 0
   return(n)
 })
 
-#' @rdname ExperimentList-methods
+#' @rdname MultipleExperiment-methods
 #' @export
-setMethod("experimentNames", "ExperimentList", function(x) {
+setMethod("experimentNames", "MultipleExperiment", function(x) {
   return(rownames(experimentData(x)))
 })
 
-#' @rdname ExperimentList-methods
+#' @rdname MultipleExperiment-methods
 #' @export
-setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
+setReplaceMethod("experimentNames", "MultipleExperiment", function(x, value) {
   rownames(experimentData(x)) = value
   validObject(x)
   return(x)
@@ -62,10 +62,10 @@ setReplaceMethod("experimentNames", "ExperimentList", function(x, value) {
   return(cdata)
 }
 
-setMethod("colData", "SummarizedExperimentList", .colData_EL)
-setMethod("colData", "RangedSummarizedExperimentList", .colData_EL)
-setMethod("colData", "SingleCellExperimentList", .colData_EL)
-setMethod("colData", "SpatialExperimentList", .colData_EL)
+setMethod("colData", "SummarizedMultipleExperiment", .colData_EL)
+setMethod("colData", "RangedSummarizedMultipleExperiment", .colData_EL)
+setMethod("colData", "SingleCellMultipleExperiment", .colData_EL)
+setMethod("colData", "SpatialMultipleExperiment", .colData_EL)
 
 #----Subsetting----
 #' Transform character indices to numeric indices
@@ -75,7 +75,7 @@ setMethod("colData", "SpatialExperimentList", .colData_EL)
 #' @param fmt a character stating the format to use for error reporting
 #'
 #' @return a numeric vector containing numeric indices
-.ExperimentList.charbound <-  function(idx, txt, fmt) {
+.MultipleExperiment.charbound <-  function(idx, txt, fmt) {
   orig = idx
   idx = match(idx, txt)
   #error reporting for missing names
@@ -122,7 +122,7 @@ setMethod("colData", "SpatialExperimentList", .colData_EL)
     if (is.character(j)) {
       #convert character indices to numeric
       fmt = paste0("<", class(x), ">[j,] index out of bounds: %s")
-      j = .ExperimentList.charbound(j, colnames(x), fmt)
+      j = .MultipleExperiment.charbound(j, colnames(x), fmt)
     }
     if (is.numeric(j))
       j = .ixNumericToLogical(j, ncol(x), paste0("<", class(x), ">[j,] index out of bounds"))
@@ -136,13 +136,13 @@ setMethod("colData", "SpatialExperimentList", .colData_EL)
     if (is.character(exp)) {
       #convert character indices to numeric
       fmt = paste0("<", class(x), ">[exp,] index out of bounds: %s")
-      exp = .ExperimentList.charbound(exp, experimentNames(x), fmt)
+      exp = .MultipleExperiment.charbound(exp, experimentNames(x), fmt)
     }
     if (is.numeric(exp))
       exp = .ixNumericToLogical(exp, nexp(x), paste0("<", class(x), ">[exp,] index out of bounds"))
 
-    #subset imgData for SpatialExperimentLists
-    if (is(x, 'SpatialExperimentList') && nrow(SpatialExperiment::imgData(x)) == nexp(x)) {
+    #subset imgData for SpatialMultipleExperiments
+    if (is(x, 'SpatialMultipleExperiment') && nrow(SpatialExperiment::imgData(x)) == nexp(x)) {
       SpatialExperiment::imgData(x) = SpatialExperiment::imgData(x)[exp, , drop = FALSE]
     }
 
@@ -173,16 +173,16 @@ setMethod("colData", "SpatialExperimentList", .colData_EL)
   return(x)
 }
 
-#' @rdname ExperimentList-methods
-setMethod("[", c("SummarizedExperimentList", "ANY", "ANY"), .indexSubsetEL)
-#' @rdname ExperimentList-methods
-setMethod("[", c("RangedSummarizedExperimentList", "ANY", "ANY"), .indexSubsetEL)
-#' @rdname ExperimentList-methods
-setMethod("[", c("SingleCellExperimentList", "ANY", "ANY"), .indexSubsetEL)
-#' @rdname ExperimentList-methods
-setMethod("[", c("SpatialExperimentList", "ANY", "ANY"), .indexSubsetEL)
+#' @rdname MultipleExperiment-methods
+setMethod("[", c("SummarizedMultipleExperiment", "ANY", "ANY"), .indexSubsetEL)
+#' @rdname MultipleExperiment-methods
+setMethod("[", c("RangedSummarizedMultipleExperiment", "ANY", "ANY"), .indexSubsetEL)
+#' @rdname MultipleExperiment-methods
+setMethod("[", c("SingleCellMultipleExperiment", "ANY", "ANY"), .indexSubsetEL)
+#' @rdname MultipleExperiment-methods
+setMethod("[", c("SpatialMultipleExperiment", "ANY", "ANY"), .indexSubsetEL)
 
-# setMethod("subset", "ExperimentList", function(x, subset, select, ..., experiment) {
+# setMethod("subset", "MultipleExperiment", function(x, subset, select, ..., experiment) {
 #   i = S4Vectors:::evalqForSubset(subset, SummarizedExperiment::rowData(x, use.names = FALSE), ...)
 #   j = S4Vectors:::evalqForSubset(select, SummarizedExperiment::colData(x), ...)
 #   exp = S4Vectors:::evalqForSubset(experiment, experimentData(x), ...)
@@ -190,9 +190,9 @@ setMethod("[", c("SpatialExperimentList", "ANY", "ANY"), .indexSubsetEL)
 # })
 
 #----experiments----
-#' @rdname ExperimentList-methods
+#' @rdname MultipleExperiment-methods
 #' @export
-setMethod("experiments", "ExperimentList", function(x, change.names = TRUE) {
+setMethod("experiments", "MultipleExperiment", function(x, change.names = TRUE) {
   #revert names
   if (change.names && !is.null(experimentNames(x)) && !is.null(colnames(x))) {
     regex = gsub('\\.', '\\\\\\.', paste(experimentNames(x), collapse = '|'))

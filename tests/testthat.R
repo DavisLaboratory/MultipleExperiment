@@ -1,4 +1,4 @@
 library(testthat)
-library(ExperimentList)
+library(MultipleExperiment)
 
-test_check("ExperimentList")
+test_check("MultipleExperiment")

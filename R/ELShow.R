@@ -3,7 +3,7 @@
 .showEL <- function(object) {
   ## header
   classLineage = is(object)
-  cat('ExperimentList with ', nexp(object), ' ', classLineage[2], 's\n', sep = '')
+  cat('MultipleExperiment with ', nexp(object), ' ', classLineage[2], 's\n', sep = '')
 
   ## Experiment data
   callNextMethod()
@@ -16,14 +16,14 @@
 }
 
 #' @export
-#' @rdname ExperimentList-methods
-setMethod("show", "SummarizedExperimentList", .showEL)
+#' @rdname MultipleExperiment-methods
+setMethod("show", "SummarizedMultipleExperiment", .showEL)
 #' @export
-#' @rdname ExperimentList-methods
-setMethod("show", "RangedSummarizedExperimentList", .showEL)
+#' @rdname MultipleExperiment-methods
+setMethod("show", "RangedSummarizedMultipleExperiment", .showEL)
 #' @export
-#' @rdname ExperimentList-methods
-setMethod("show", "SingleCellExperimentList", .showEL)
+#' @rdname MultipleExperiment-methods
+setMethod("show", "SingleCellMultipleExperiment", .showEL)
 #' @export
-#' @rdname ExperimentList-methods
-setMethod("show", "SpatialExperimentList", .showEL)
+#' @rdname MultipleExperiment-methods
+setMethod("show", "SpatialMultipleExperiment", .showEL)

@@ -4,24 +4,24 @@
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
 
-.ExperimentList.coerce <- function(x,
+.MultipleExperiment.coerce <- function(x,
                                    destclass = c(
-                                     'SummarizedExperimentList',
-                                     'RangedSummarizedExperimentList',
-                                     'SingleCellExperimentList',
-                                     'SpatialExperimentList'
+                                     'SummarizedMultipleExperiment',
+                                     'RangedSummarizedMultipleExperiment',
+                                     'SingleCellMultipleExperiment',
+                                     'SpatialMultipleExperiment'
                                    )) {
   #extract data
   experimentData = experimentData(x)
   experimentIndex = x@experimentIndex
 
   #coerce
-  #convert to super class (e.g., from SpatialExperimentList to SpatialExperiment)
+  #convert to super class (e.g., from SpatialMultipleExperiment to SpatialExperiment)
   x = x |>
     as(is(x)[2]) |>
     #convert to sibling class (e.g., SingleCellExperiment)
     as(gsub('List', '', destclass)) |>
-    #convert to the respective ExperimentList subclass (e.g., SingleCellExperimentList)
+    #convert to the respective MultipleExperiment subclass (e.g., SingleCellMultipleExperiment)
     as(destclass)
   x@experimentData = experimentData
   x@experimentIndex = experimentIndex
@@ -30,18 +30,18 @@
   return(x)
 }
 
-setAs("ExperimentList", "SummarizedExperimentList", function(from) {
-  .ExperimentList.coerce(from, 'SummarizedExperimentList')
+setAs("MultipleExperiment", "SummarizedMultipleExperiment", function(from) {
+  .MultipleExperiment.coerce(from, 'SummarizedMultipleExperiment')
 })
 
-setAs("ExperimentList", "RangedSummarizedExperimentList", function(from) {
-  .ExperimentList.coerce(from, 'RangedSummarizedExperimentList')
+setAs("MultipleExperiment", "RangedSummarizedMultipleExperiment", function(from) {
+  .MultipleExperiment.coerce(from, 'RangedSummarizedMultipleExperiment')
 })
 
-setAs("ExperimentList", "SingleCellExperimentList", function(from) {
-  .ExperimentList.coerce(from, 'SingleCellExperimentList')
+setAs("MultipleExperiment", "SingleCellMultipleExperiment", function(from) {
+  .MultipleExperiment.coerce(from, 'SingleCellMultipleExperiment')
 })
 
-setAs("ExperimentList", "SpatialExperimentList", function(from) {
-  .ExperimentList.coerce(from, 'SpatialExperimentList')
+setAs("MultipleExperiment", "SpatialMultipleExperiment", function(from) {
+  .MultipleExperiment.coerce(from, 'SpatialMultipleExperiment')
 })
